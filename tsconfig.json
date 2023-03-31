@@ -10,7 +10,8 @@
     "baseUrl": "src",
     "paths": {
       "@/*": ["*"],
-      "@/tests/*": ["../tests/*"]
+      "@/tests/*": ["../tests/*"],
+      "@data": ["src/data"]
     },
     "allowJs": true,
     "resolveJsonModule": true
