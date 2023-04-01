@@ -4,6 +4,8 @@
   "description": "",
   "main": "index.js",
   "scripts": {
+    "lint": "eslint .",
+    "lint:fix": "npm run lint -- --fix",
     "test": "jest --passWithNoTests",
     "test:watch": "npm test -- --watch",
     "test:staged": "npm test -- --findRelatedTests",
@@ -22,6 +24,7 @@
     "eslint-plugin-import": "^2.27.5",
     "eslint-plugin-node": "^11.1.0",
     "eslint-plugin-promise": "^6.1.1",
+    "eslint-plugin-react": "^7.32.2",
     "eslint-plugin-standard": "^5.0.0",
     "faker": "^5.5.3",
     "git-commit-msg-linter": "^4.9.2",
