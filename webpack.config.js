@@ -26,7 +26,7 @@ module.exports = {
         test: /\.scss$/,
         use: [
           {
-            loader: 'styled-loader'
+            loader: 'style-loader'
           },
           {
             loader: 'css-loader',
@@ -38,13 +38,37 @@ module.exports = {
             loader: 'sass-loader'
           }
         ]
+      },
+      {
+        test: /\.(png|jpe?g|gif)$/i,
+        use: [
+          {
+            loader: 'file-loader'
+          }
+        ]
+      },
+      {
+        test: /\.svg$/i,
+        use: [
+          {
+            loader: 'svg-url-loader',
+            options: {
+              limit: 8192, // The maximum file size in bytes for inline loading
+              encoding: 'base64' // The encoding type for inline loading
+            }
+          }
+        ]
       }
     ]
   },
   devServer: {
-    contentBase: './public',
-    writeToDisk: true,
-    historyApiFallback: true
+    historyApiFallback: true,
+    devMiddleware: {
+      writeToDisk: true
+    },
+    static: {
+      directory: './public'
+    }
   },
   externals: {
     react: 'React',

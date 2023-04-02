@@ -1,0 +1,141 @@
+@import '../../styles/colors.scss';
+
+* {
+  font-family: 'Roboto', sans-serif;
+  font-size: 14px;
+  padding: 0;
+  margin: 0;
+  box-sizing: border-box;
+}
+
+body {
+  background-color: $background;
+}
+
+input[type='password'],
+input[type='email'] {
+  border: 1px solid $primaryLight;
+  line-height: 40px;
+  border-radius: 4px;
+  padding-left: 12px;
+
+  &:focus {
+    outline-color: $primaryLight;
+  }
+}
+
+button {
+  background-color: $primary;
+  color: $white;
+  border-radius: 8px;
+  font-size: 16px;
+  border: none;
+  line-height: 60px;
+  cursor: pointer;
+}
+
+.login {
+  display: flex;
+  flex-direction: column;
+  height: 100vh;
+  justify-content: space-between;
+
+  .header {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    border-top: 40px solid $primaryDark;
+    background-color: $primary;
+
+    img {
+      margin-top: 40px;
+    }
+
+    h1 {
+      color: $white;
+      margin: 16px 0px 40px;
+    }
+  }
+
+  .form {
+    display: flex;
+    flex-direction: column;
+    align-self: center;
+    width: 100%;
+    max-width: 400px;
+    background-color: $white;
+    border-radius: 8px;
+    padding: 40px;
+    box-shadow: 0px 1px 3px -1px $black;
+
+    h2 {
+      color: $primaryDark;
+      text-transform: uppercase;
+      font-size: 20px;
+      text-align: center;
+      font-weight: bold;
+    }
+
+    .inputWrapper {
+      position: relative;
+      display: flex;
+      align-items: center;
+      margin-top: 16px;
+
+      input {
+        flex: 1;
+      }
+
+      .inputIcon {
+        width: 14px;
+        height: 14px;
+        background: radial-gradient(circle at 16px 16px, $red, #a8263d);
+        border-radius: 10px;
+        position: absolute;
+        right: 7px;
+        cursor: help;
+      }
+    }
+
+    button[type='submit'] {
+      margin-top: 32px;
+    }
+
+    .signUpLink {
+      display: inline;
+      align-self: center;
+      text-align: center;
+      margin-top: 16px;
+      font-size: 16px;
+      color: $primary;
+      text-transform: lowercase;
+      cursor: pointer;
+      transition: border-bottom 0.2s;
+      border-bottom: 2px solid transparent;
+
+      &:hover {
+        border-bottom-color: $primary;
+      }
+    }
+
+    .errorWrapper {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+
+      .spinner {
+        margin-top: 30px;
+      }
+
+      .error {
+        margin-top: 30px;
+        color: $primaryLight;
+      }
+    }
+  }
+
+  .footer {
+    background-color: $primary;
+    height: 48px;
+  }
+}
