@@ -1,0 +1,34 @@
+@import '../../styles/colors.scss';
+
+input[type='password'],
+input[type='email'] {
+  border: 1px solid $primaryLight;
+  line-height: 40px;
+  border-radius: 4px;
+  padding-left: 12px;
+
+  &:focus {
+    outline-color: $primaryLight;
+  }
+}
+
+.inputWrapper {
+  position: relative;
+  display: flex;
+  align-items: center;
+  margin-top: 16px;
+
+  input {
+    flex: 1;
+  }
+
+  .inputIcon {
+    width: 14px;
+    height: 14px;
+    background: radial-gradient(circle at 16px 16px, $red, #a8263d);
+    border-radius: 10px;
+    position: absolute;
+    right: 7px;
+    cursor: help;
+  }
+}
