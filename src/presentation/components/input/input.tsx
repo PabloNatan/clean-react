@@ -6,7 +6,7 @@ type Props = InputHTMLAttributes<HTMLInputElement>
 export const Input: React.FC<Props> = (props) => {
   return (
     <div className={Styles.inputWrapper}>
-      <input {...props} />
+      <input autoComplete="off" {...props} />
       <div className={Styles.inputIcon} />
     </div>
   )
