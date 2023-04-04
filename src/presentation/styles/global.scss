@@ -32,4 +32,10 @@ button {
   border: none;
   line-height: 60px;
   cursor: pointer;
+
+  &:disabled {
+    background-color: $disabledBackground;
+    cursor: not-allowed;
+    color: $disabledColor;
+  }
 }

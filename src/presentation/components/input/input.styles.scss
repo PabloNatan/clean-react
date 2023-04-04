@@ -13,10 +13,12 @@
   .inputIcon {
     width: 14px;
     height: 14px;
-    background: radial-gradient(circle at 16px 16px, $red, #a8263d);
     border-radius: 10px;
     position: absolute;
     right: 7px;
     cursor: help;
+  }
+  :global .error {
+    background: radial-gradient(circle at 16px 16px, $red, #a8263d);
   }
 }
