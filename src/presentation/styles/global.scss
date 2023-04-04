@@ -32,6 +32,7 @@ button {
   border: none;
   line-height: 60px;
   cursor: pointer;
+  font-weight: bold;
 
   &:disabled {
     background-color: $disabledBackground;

@@ -5,8 +5,15 @@ import { FormContext } from '@/presentation/contexts/form/form-context'
 type Props = InputHTMLAttributes<HTMLInputElement>
 
 export const Input: React.FC<Props> = (props) => {
-  const { errorState } = useContext(FormContext)
-  const error = errorState[props.name]
+  const { state, setState } = useContext(FormContext)
+  const error = state[`${props.name}Error`]
+
+  function handleChange(event: React.ChangeEvent<HTMLInputElement>): void {
+    setState((oldState) => ({
+      ...oldState,
+      [event.target.name]: event.target.value
+    }))
+  }
 
   const getStatus = (): string => {
     return 'error'
@@ -18,7 +25,12 @@ export const Input: React.FC<Props> = (props) => {
 
   return (
     <div className={Styles.inputWrapper}>
-      <input autoComplete="off" {...props} />
+      <input
+        {...props}
+        autoComplete="off"
+        aria-label={props.name}
+        onChange={handleChange}
+      />
       <div
         title={getTitle()}
         className={[Styles.inputIcon, getStatus()].join(' ')}
