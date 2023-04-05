@@ -1,29 +1,18 @@
-import React from 'react'
+import { ValidationSpy } from '@/presentation/test'
 import {
-  type RenderResult,
   render,
   screen,
-  within
+  within,
+  type RenderResult
 } from '@testing-library/react'
+import faker from 'faker'
 import user from '@testing-library/user-event'
+import React from 'react'
 import { Login } from './login'
-import { type Validation } from '@/presentation/protocols/validation'
 
 type SutTypes = {
   sut: RenderResult
   validationSpy: ValidationSpy
-}
-
-class ValidationSpy implements Validation {
-  errorMessage: string
-  fieldName: string
-  fieldValue: string
-
-  validate(fieldName: string, fieldValue: string): string {
-    this.fieldName = fieldName
-    this.fieldValue = fieldValue
-    return this.errorMessage
-  }
 }
 
 const makeSut = (): SutTypes => {
@@ -54,21 +43,22 @@ describe('Login Component', () => {
     expect(passwordStatus).toHaveClass('error')
     expect(passwordStatus.title).toBe('Campo obrigatório')
   })
-
   test('Should call Validation with correct email', async () => {
     const { validationSpy } = makeSut()
     const emailInput = screen.getByRole('textbox', { name: /email/i })
+    const email = faker.internet.email()
     await user.click(emailInput)
-    await user.keyboard('any_email')
+    await user.keyboard(email)
     expect(validationSpy.fieldName).toEqual('email')
-    expect(validationSpy.fieldValue).toEqual('any_email')
+    expect(validationSpy.fieldValue).toEqual(email)
   })
   test('Should call Validation with correct password', async () => {
     const { validationSpy } = makeSut()
     const passwordInput = screen.getByRole('password', { name: /password/i })
+    const password = faker.internet.password()
     await user.click(passwordInput)
-    await user.keyboard('any_password')
+    await user.keyboard(password)
     expect(validationSpy.fieldName).toEqual('password')
-    expect(validationSpy.fieldValue).toEqual('any_password')
+    expect(validationSpy.fieldValue).toEqual(password)
   })
 })
