@@ -21,4 +21,7 @@
   :global .error {
     background: radial-gradient(circle at 16px 16px, $red, #a8263d);
   }
+  :global .sucesss {
+    background: radial-gradient(circle at 16px 16px, $green, #106865);
+  }
 }

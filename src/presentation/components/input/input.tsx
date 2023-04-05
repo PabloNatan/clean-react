@@ -16,11 +16,11 @@ export const Input: React.FC<Props> = (props) => {
   }
 
   const getStatus = (): string => {
-    return 'error'
+    return error ? 'error' : 'sucess'
   }
 
   const getTitle = (): string => {
-    return error
+    return error || 'Tudo certo!'
   }
 
   return (
