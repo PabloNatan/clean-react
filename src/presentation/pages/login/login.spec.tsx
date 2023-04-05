@@ -108,4 +108,19 @@ describe('Login Component', () => {
     expect(passwordStatus).toHaveClass('sucess')
     expect(passwordStatus.title).toBe('Tudo certo!')
   })
+
+  test('Should show valid email state  if Validation succeeds', async () => {
+    const { validationSpy } = makeSut()
+    validationSpy.errorMessage = null
+    const emailInput = screen.getByRole('textbox', { name: /email/i })
+
+    await user.click(emailInput)
+    await user.keyboard(faker.internet.password())
+
+    const passwordStatus = screen.getByRole('status', {
+      name: /status-email/i
+    })
+    expect(passwordStatus).toHaveClass('sucess')
+    expect(passwordStatus.title).toBe('Tudo certo!')
+  })
 })
