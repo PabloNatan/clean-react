@@ -9,10 +9,26 @@ import faker from 'faker'
 import user from '@testing-library/user-event'
 import React from 'react'
 import { Login } from './login'
+import {
+  type Authentication,
+  type AuthenticationParams
+} from '@/domain/usecases'
+import { type AccountModel } from '@/domain/models'
+import { mockAccountModel } from '@/domain/test'
+
+class AuthenticationSpy implements Authentication {
+  account = mockAccountModel()
+  params: AuthenticationParams
+  async auth(params: AuthenticationParams): Promise<AccountModel> {
+    this.params = params
+    return Promise.resolve(this.account)
+  }
+}
 
 type SutTypes = {
   sut: RenderResult
   validationSpy: ValidationSpy
+  authenticationSpy: AuthenticationSpy
 }
 
 type SutParams = {
@@ -21,9 +37,14 @@ type SutParams = {
 
 const makeSut = (params?: SutParams): SutTypes => {
   const validationSpy = new ValidationSpy()
+  const authenticationSpy = new AuthenticationSpy()
   validationSpy.errorMessage = params?.validationError
-  const sut = render(<Login validation={validationSpy} />)
-  return { sut, validationSpy }
+
+  const sut = render(
+    <Login validation={validationSpy} authentication={authenticationSpy} />
+  )
+
+  return { sut, validationSpy, authenticationSpy }
 }
 
 describe('Login Component', () => {
@@ -147,5 +168,44 @@ describe('Login Component', () => {
     await user.keyboard(faker.internet.password())
 
     expect(submitButton).toBeEnabled()
+  })
+
+  test('Should show spinner on submit', async () => {
+    makeSut()
+    const submitButton = screen.getByRole('button')
+
+    const emailInput = screen.getByRole('textbox', { name: /email/i })
+    await user.click(emailInput)
+    await user.keyboard(faker.internet.email())
+
+    const passwordInput = screen.getByRole('password', { name: /password/i })
+    await user.click(passwordInput)
+    await user.keyboard(faker.internet.password())
+
+    await user.click(submitButton)
+
+    const formStatus = screen.getByRole('status', { name: /request-feedback/i })
+    const spinner = within(formStatus).queryByLabelText('spinner')
+
+    expect(spinner).toBeInTheDocument()
+  })
+
+  test('Should call Authentication with correct values', async () => {
+    const { authenticationSpy } = makeSut()
+    const submitButton = screen.getByRole('button')
+
+    const emailInput = screen.getByRole('textbox', { name: /email/i })
+    const email = faker.internet.email()
+    await user.click(emailInput)
+    await user.keyboard(email)
+
+    const passwordInput = screen.getByRole('password', { name: /password/i })
+    const password = faker.internet.password()
+    await user.click(passwordInput)
+    await user.keyboard(password)
+
+    await user.click(submitButton)
+
+    expect(authenticationSpy.params).toEqual({ email, password })
   })
 })
