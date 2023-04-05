@@ -57,8 +57,14 @@ export const Login: React.FC<Props> = ({
       <FormContext.Provider value={{ state, setState }}>
         <form className={Styles.form} onSubmit={handleSubmit}>
           <h2>Login</h2>
-          <Input type="email" name="email" placeholder="Digite seu e-mail" />
           <Input
+            value={state.email}
+            type="email"
+            name="email"
+            placeholder="Digite seu e-mail"
+          />
+          <Input
+            value={state.password}
             type="password"
             name="password"
             role="password"

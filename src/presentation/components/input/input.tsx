@@ -16,7 +16,7 @@ export const Input: React.FC<Props> = (props) => {
   }
 
   const getStatus = (): string => {
-    return error ? 'error' : 'sucess'
+    return error ? 'error' : 'success'
   }
 
   const getTitle = (): string => {
