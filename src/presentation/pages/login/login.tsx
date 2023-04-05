@@ -37,6 +37,7 @@ export const Login: React.FC<Props> = ({ validation }: Props) => {
     }))
   }, [state.password])
 
+  const isFormInvalid = !!state.emailError || !!state.passwordError
   return (
     <div className={Styles.login}>
       <LoginHeader />
@@ -50,7 +51,7 @@ export const Login: React.FC<Props> = ({ validation }: Props) => {
             role="password"
             placeholder="Digite sua senha"
           />
-          <button type="submit" disabled>
+          <button type="submit" disabled={isFormInvalid}>
             Entrar
           </button>
           <span className={Styles.signUpLink}>Criar contar</span>

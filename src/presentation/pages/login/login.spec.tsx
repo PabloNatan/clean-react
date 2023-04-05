@@ -15,16 +15,22 @@ type SutTypes = {
   validationSpy: ValidationSpy
 }
 
-const makeSut = (): SutTypes => {
+type SutParams = {
+  validationError: string
+}
+
+const makeSut = (params?: SutParams): SutTypes => {
   const validationSpy = new ValidationSpy()
-  validationSpy.errorMessage = faker.random.words()
+  validationSpy.errorMessage = params?.validationError
   const sut = render(<Login validation={validationSpy} />)
   return { sut, validationSpy }
 }
 
 describe('Login Component', () => {
   test('Should start with initial state', () => {
-    const { validationSpy } = makeSut()
+    const validationError = faker.random.words()
+    makeSut({ validationError })
+
     const formStatus = screen.getByRole('status', { name: /request-feedback/i })
     const spinner = within(formStatus).queryByLabelText('spinner')
     const errorMessage = within(formStatus).queryByLabelText('error-message')
@@ -36,13 +42,13 @@ describe('Login Component', () => {
 
     const emailStatus = screen.getByRole('status', { name: /status-email/i })
     expect(emailStatus).toHaveClass('error')
-    expect(emailStatus.title).toBe(validationSpy.errorMessage)
+    expect(emailStatus.title).toBe(validationError)
 
     const passwordStatus = screen.getByRole('status', {
       name: /status-password/i
     })
     expect(passwordStatus).toHaveClass('error')
-    expect(passwordStatus.title).toBe(validationSpy.errorMessage)
+    expect(passwordStatus.title).toBe(validationError)
   })
 
   test('Should call Validation with correct email', async () => {
@@ -66,7 +72,9 @@ describe('Login Component', () => {
   })
 
   test('Should show email error if Validation fails', async () => {
-    const { validationSpy } = makeSut()
+    const validationError = faker.random.words()
+    makeSut({ validationError })
+
     const emailInput = screen.getByRole('textbox', { name: /email/i })
 
     const fakerEmail = faker.internet.email()
@@ -77,11 +85,13 @@ describe('Login Component', () => {
       name: /status-email/i
     })
     expect(passwordStatus).toHaveClass('error')
-    expect(passwordStatus.title).toBe(validationSpy.errorMessage)
+    expect(passwordStatus.title).toBe(validationError)
   })
 
   test('Should show password error if Validation fails', async () => {
-    const { validationSpy } = makeSut()
+    const validationError = faker.random.words()
+    makeSut({ validationError })
+
     const passwordInput = screen.getByRole('password', { name: /password/i })
 
     await user.click(passwordInput)
@@ -91,12 +101,12 @@ describe('Login Component', () => {
       name: /status-password/i
     })
     expect(passwordStatus).toHaveClass('error')
-    expect(passwordStatus.title).toBe(validationSpy.errorMessage)
+    expect(passwordStatus.title).toBe(validationError)
   })
 
   test('Should show valid password state  if Validation succeeds', async () => {
-    const { validationSpy } = makeSut()
-    validationSpy.errorMessage = null
+    makeSut()
+
     const passwordInput = screen.getByRole('password', { name: /password/i })
 
     await user.click(passwordInput)
@@ -110,17 +120,32 @@ describe('Login Component', () => {
   })
 
   test('Should show valid email state  if Validation succeeds', async () => {
-    const { validationSpy } = makeSut()
-    validationSpy.errorMessage = null
+    makeSut()
+
     const emailInput = screen.getByRole('textbox', { name: /email/i })
 
     await user.click(emailInput)
-    await user.keyboard(faker.internet.password())
+    await user.keyboard(faker.internet.email())
 
-    const passwordStatus = screen.getByRole('status', {
+    const emailStatus = screen.getByRole('status', {
       name: /status-email/i
     })
-    expect(passwordStatus).toHaveClass('sucess')
-    expect(passwordStatus.title).toBe('Tudo certo!')
+    expect(emailStatus).toHaveClass('sucess')
+    expect(emailStatus.title).toBe('Tudo certo!')
+  })
+
+  test('Should enable submit button if form is valid', async () => {
+    makeSut()
+    const submitButton = screen.getByRole('button')
+
+    const emailInput = screen.getByRole('textbox', { name: /email/i })
+    await user.click(emailInput)
+    await user.keyboard(faker.internet.email())
+
+    const passwordInput = screen.getByRole('password', { name: /password/i })
+    await user.click(passwordInput)
+    await user.keyboard(faker.internet.password())
+
+    expect(submitButton).toBeEnabled()
   })
 })
