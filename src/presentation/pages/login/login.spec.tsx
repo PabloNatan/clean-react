@@ -19,7 +19,7 @@ import { Login } from './login'
 
 type SutTypes = {
   sut: RenderResult
-  router: ReturnType<typeof createMemoryRouter>
+  history: ReturnType<typeof createMemoryRouter>
   validationSpy: ValidationSpy
   authenticationSpy: AuthenticationSpy
 }
@@ -33,18 +33,21 @@ const makeSut = (params?: SutParams): SutTypes => {
   const authenticationSpy = new AuthenticationSpy()
   validationSpy.errorMessage = params?.validationError
 
-  const router = createMemoryRouter(
+  const element = (
+    <Login validation={validationSpy} authentication={authenticationSpy} />
+  )
+
+  const history = createMemoryRouter(
     [
       {
         path: '/login',
-        element: (
-          <Login
-            validation={validationSpy}
-            authentication={authenticationSpy}
-          />
-        )
+        element
       },
-      { path: '/signup', element: <div>SingUp</div> }
+      { path: '/signup', element },
+      {
+        path: '/',
+        element
+      }
     ],
     {
       initialIndex: 0,
@@ -52,9 +55,9 @@ const makeSut = (params?: SutParams): SutTypes => {
     }
   )
 
-  const sut = render(<RouterProvider router={router} />)
+  const sut = render(<RouterProvider router={history} />)
 
-  return { sut, router, validationSpy, authenticationSpy }
+  return { sut, history, validationSpy, authenticationSpy }
 }
 
 const populatePasswordFieldAsync = async (
@@ -189,8 +192,9 @@ describe('Login Component', () => {
   test('should call Authentication only once', async () => {
     const { authenticationSpy } = makeSut()
     await simulateValidSubmitAsync()
-    const submitButton = screen.getByRole('button')
+    const submitButton = screen.queryByRole('button', { name: /signIn/i })
     await user.click(submitButton)
+
     expect(authenticationSpy.callsCount).toBe(1)
   })
 
@@ -240,18 +244,19 @@ describe('Login Component', () => {
   })
 
   test('Should add accessToken to localstorage on success', async () => {
-    const { authenticationSpy } = makeSut()
+    const { authenticationSpy, history } = makeSut()
     await simulateValidSubmitAsync()
     expect(localStorage.setItem).toHaveBeenCalledWith(
       'accessToken',
       authenticationSpy.account.accessToken
     )
+    expect(history.state.location.pathname).toBe('/')
   })
 
-  test.only('Should go to signup page', async () => {
-    const { router } = makeSut()
+  test('Should go to signup page', async () => {
+    const { history } = makeSut()
     const registerButton = screen.getByRole('link')
     await user.click(registerButton)
-    expect(router.state.location.pathname).toBe('/signup')
+    expect(history.state.location.pathname).toBe('/signup')
   })
 })
