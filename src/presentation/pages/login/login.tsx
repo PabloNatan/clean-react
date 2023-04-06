@@ -57,10 +57,12 @@ export const Login: React.FC<Props> = ({
         return
       }
       setState((oldState) => ({ ...oldState, isLoading: true }))
-      await authentication.auth({
+      const acccount = await authentication.auth({
         email: state.email,
         password: state.password
       })
+
+      localStorage.setItem('accessToken', acccount.accessToken)
     } catch (error) {
       setState((oldState) => ({
         ...oldState,
