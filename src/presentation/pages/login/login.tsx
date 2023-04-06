@@ -28,6 +28,12 @@ export const Login: React.FC<Props> = ({
     mainError: ''
   })
 
+  const isFormInvalid =
+    !!state.emailError ||
+    !!state.passwordError ||
+    !state.email ||
+    !state.password
+
   useEffect(() => {
     setState((oldState) => ({
       ...oldState,
@@ -46,16 +52,29 @@ export const Login: React.FC<Props> = ({
     event: React.FormEvent<HTMLFormElement>
   ): Promise<void> {
     event.preventDefault()
-    setState((oldState) => ({ ...oldState, isLoading: true }))
-    await authentication.auth({ email: state.email, password: state.password })
+    try {
+      if (state.isLoading || isFormInvalid) {
+        return
+      }
+      setState((oldState) => ({ ...oldState, isLoading: true }))
+      await authentication.auth({
+        email: state.email,
+        password: state.password
+      })
+    } catch (error) {
+      setState((oldState) => ({
+        ...oldState,
+        mainError: error.message,
+        isLoading: false
+      }))
+    }
   }
 
-  const isFormInvalid = !!state.emailError || !!state.passwordError
   return (
     <div className={Styles.login}>
       <LoginHeader />
       <FormContext.Provider value={{ state, setState }}>
-        <form className={Styles.form} onSubmit={handleSubmit}>
+        <form className={Styles.form} onSubmit={handleSubmit} role="form">
           <h2>Login</h2>
           <Input
             value={state.email}

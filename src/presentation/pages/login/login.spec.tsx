@@ -4,12 +4,14 @@ import {
   render,
   screen,
   within,
-  type RenderResult
+  type RenderResult,
+  fireEvent
 } from '@testing-library/react'
 import user from '@testing-library/user-event'
 import faker from 'faker'
 import React from 'react'
 import { Login } from './login'
+import { InvalidCredentialsError } from '@/domain/errors'
 
 type SutTypes = {
   sut: RenderResult
@@ -37,6 +39,7 @@ const populatePasswordFieldAsync = async (
   password = faker.internet.password()
 ): Promise<void> => {
   const passwordInput = screen.getByRole('password', { name: /password/i })
+  await user.clear(passwordInput)
   await user.click(passwordInput)
   await user.keyboard(password)
 }
@@ -45,6 +48,7 @@ const populateEmailFieldAsync = async (
   email = faker.internet.email()
 ): Promise<void> => {
   const emailInput = screen.getByRole('textbox', { name: /email/i })
+  await user.clear(emailInput)
   await user.click(emailInput)
   await user.keyboard(email)
 }
@@ -152,5 +156,58 @@ describe('Login Component', () => {
     const password = faker.internet.password()
     await simulateValidSubmitAsync(email, password)
     expect(authenticationSpy.params).toEqual({ email, password })
+  })
+
+  test('should call Authentication only once', async () => {
+    const { authenticationSpy } = makeSut()
+    await simulateValidSubmitAsync()
+    const submitButton = screen.getByRole('button')
+    await user.click(submitButton)
+    expect(authenticationSpy.callsCount).toBe(1)
+  })
+
+  test('Should not call Authentication if password is not provided', async () => {
+    const { authenticationSpy } = makeSut()
+    await populateEmailFieldAsync()
+    const form = screen.getByRole('form')
+    fireEvent.submit(form)
+    expect(authenticationSpy.callsCount).toBe(0)
+  })
+
+  test('Should not call Authentication if email is not provided', async () => {
+    const { authenticationSpy } = makeSut()
+    await populatePasswordFieldAsync()
+    const form = screen.getByRole('form')
+    fireEvent.submit(form)
+    expect(authenticationSpy.callsCount).toBe(0)
+  })
+
+  test('Should not call Authentication if invalid email provided', async () => {
+    const validationError = faker.random.words()
+    const { authenticationSpy } = makeSut({ validationError })
+    await populatePasswordFieldAsync()
+    await populatePasswordFieldAsync()
+    const form = screen.getByRole('form')
+    fireEvent.submit(form)
+    expect(authenticationSpy.callsCount).toBe(0)
+  })
+
+  test('Should present error if Authentication fails', async () => {
+    const { authenticationSpy } = makeSut()
+    const error = new InvalidCredentialsError()
+
+    jest.spyOn(authenticationSpy, 'auth').mockRejectedValueOnce(error)
+
+    await simulateValidSubmitAsync()
+
+    const formStatus = screen.getByRole('status', { name: /request-feedback/i })
+    const spinner = within(formStatus).queryByLabelText('spinner')
+
+    const errorMessage = await within(formStatus).findByLabelText(
+      'error-message'
+    )
+
+    expect(spinner).not.toBeInTheDocument()
+    expect(errorMessage.textContent).toBe(error.message)
   })
 })
