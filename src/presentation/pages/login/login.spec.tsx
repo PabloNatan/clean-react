@@ -3,21 +3,23 @@ import React from 'react'
 
 import { AuthenticationSpy, ValidationSpy } from '@/presentation/test'
 import {
+  cleanup,
+  fireEvent,
   render,
   screen,
   within,
-  type RenderResult,
-  fireEvent,
-  cleanup
+  type RenderResult
 } from '@testing-library/react'
 import user from '@testing-library/user-event'
 import 'jest-localstorage-mock'
 
-import { Login } from './login'
 import { InvalidCredentialsError } from '@/domain/errors'
+import { RouterProvider, createMemoryRouter } from 'react-router-dom'
+import { Login } from './login'
 
 type SutTypes = {
   sut: RenderResult
+  router: ReturnType<typeof createMemoryRouter>
   validationSpy: ValidationSpy
   authenticationSpy: AuthenticationSpy
 }
@@ -31,11 +33,28 @@ const makeSut = (params?: SutParams): SutTypes => {
   const authenticationSpy = new AuthenticationSpy()
   validationSpy.errorMessage = params?.validationError
 
-  const sut = render(
-    <Login validation={validationSpy} authentication={authenticationSpy} />
+  const router = createMemoryRouter(
+    [
+      {
+        path: '/login',
+        element: (
+          <Login
+            validation={validationSpy}
+            authentication={authenticationSpy}
+          />
+        )
+      },
+      { path: '/signup', element: <div>SingUp</div> }
+    ],
+    {
+      initialIndex: 0,
+      initialEntries: ['/login']
+    }
   )
 
-  return { sut, validationSpy, authenticationSpy }
+  const sut = render(<RouterProvider router={router} />)
+
+  return { sut, router, validationSpy, authenticationSpy }
 }
 
 const populatePasswordFieldAsync = async (
@@ -227,5 +246,12 @@ describe('Login Component', () => {
       'accessToken',
       authenticationSpy.account.accessToken
     )
+  })
+
+  test.only('Should go to signup page', async () => {
+    const { router } = makeSut()
+    const registerButton = screen.getByRole('link')
+    await user.click(registerButton)
+    expect(router.state.location.pathname).toBe('/signup')
   })
 })
