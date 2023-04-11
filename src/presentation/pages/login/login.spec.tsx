@@ -88,10 +88,7 @@ const simulateValidSubmitAsync = async (
   await user.click(submitButton)
 }
 
-const simulateStatusForField = (
-  field: string,
-  validationError?: string
-): void => {
+const testStatusForField = (field: string, validationError?: string): void => {
   const status = screen.getByRole('status', {
     name: new RegExp(`status-${field}`)
   })
@@ -119,8 +116,8 @@ describe('Login Component', () => {
     const submitButton = screen.getByRole('button')
     expect(submitButton).toBeDisabled()
 
-    simulateStatusForField('email', validationError)
-    simulateStatusForField('password', validationError)
+    testStatusForField('email', validationError)
+    testStatusForField('password', validationError)
   })
 
   test('Should call Validation with correct email', async () => {
@@ -143,26 +140,26 @@ describe('Login Component', () => {
     const validationError = faker.random.words()
     makeSut({ validationError })
     await populateEmailFieldAsync()
-    simulateStatusForField('email', validationError)
+    testStatusForField('email', validationError)
   })
 
   test('Should show password error if Validation fails', async () => {
     const validationError = faker.random.words()
     makeSut({ validationError })
     await populatePasswordFieldAsync()
-    simulateStatusForField('password', validationError)
+    testStatusForField('password', validationError)
   })
 
   test('Should show valid password state  if Validation succeeds', async () => {
     makeSut()
     await populatePasswordFieldAsync()
-    simulateStatusForField('password')
+    testStatusForField('password')
   })
 
   test('Should show valid email state  if Validation succeeds', async () => {
     makeSut()
     await populateEmailFieldAsync()
-    simulateStatusForField('email')
+    testStatusForField('email')
   })
 
   test('Should enable submit button if form is valid', async () => {
