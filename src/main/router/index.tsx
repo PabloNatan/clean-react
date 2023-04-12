@@ -1,9 +1,8 @@
-import React from 'react'
 import { createBrowserRouter } from 'react-router-dom'
 
-import { Login } from '@/presentation/pages'
+import { makeLogin } from '../factories/pages/login/login-factory'
 
 export const router = createBrowserRouter([
-  { path: '/', element: <Login /> },
-  { path: '/login', element: <Login /> }
+  { path: '/', element: makeLogin({}) },
+  { path: '/login', element: makeLogin({}) }
 ])
