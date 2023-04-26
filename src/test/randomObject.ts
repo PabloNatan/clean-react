@@ -3,7 +3,7 @@ export const randomObject = {
   name: faker.name.firstName(),
   email: faker.internet.email(),
   address: {
-    street: faker.address.streetName(),
+    street: faker.address.street(),
     city: faker.address.city(),
     state: faker.address.state(),
     zipCode: faker.address.zipCode()
