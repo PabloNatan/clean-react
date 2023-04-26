@@ -15,7 +15,7 @@ import 'jest-localstorage-mock'
 
 import { InvalidCredentialsError } from '@/domain/errors'
 import { RouterProvider, createMemoryRouter } from 'react-router-dom'
-import { Login } from './login'
+import { Login } from '@/presentation/pages'
 
 type SutTypes = {
   sut: RenderResult
