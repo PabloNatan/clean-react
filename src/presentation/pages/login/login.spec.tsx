@@ -1,4 +1,4 @@
-import faker from 'faker'
+import { faker } from '@faker-js/faker'
 import React from 'react'
 
 import { AuthenticationSpy, ValidationSpy } from '@/presentation/test'

@@ -4,7 +4,7 @@ import {
   RequiredFieldValidation,
   ValidationBuilder
 } from '@/validation/validators'
-import faker from 'faker'
+import { faker } from '@faker-js/faker'
 
 describe('ValidationBuilder', () => {
   test('Should return RequiredFieldValidation', () => {

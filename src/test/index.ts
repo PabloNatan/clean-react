@@ -1,0 +1,1 @@
+export { randomObject } from './randomObject'
