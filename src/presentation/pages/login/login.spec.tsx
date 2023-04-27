@@ -254,6 +254,18 @@ describe('Login Component', () => {
     expect(history.state.location.pathname).toBe('/')
   })
 
+  test('Should present error if SaveAccessToken fails', async () => {
+    const { saveAccessTokenMock } = makeSut()
+    const error = new InvalidCredentialsError()
+    jest.spyOn(saveAccessTokenMock, 'save').mockRejectedValueOnce(error)
+    await simulateValidSubmitAsync()
+    const formStatus = screen.getByRole('status', { name: /request-feedback/i })
+    const errorMessage = await within(formStatus).findByLabelText(
+      'error-message'
+    )
+    expect(errorMessage.textContent).toBe(error.message)
+  })
+
   test('Should go to signup page', async () => {
     const { history } = makeSut()
     const registerButton = screen.getByRole('link')
