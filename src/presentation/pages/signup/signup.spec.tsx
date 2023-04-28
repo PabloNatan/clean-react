@@ -1,10 +1,22 @@
 import React from 'react'
 import { faker } from '@faker-js/faker'
 
-import { cleanup, render, type RenderResult } from '@testing-library/react'
+import {
+  type ByRoleMatcher,
+  cleanup,
+  render,
+  type RenderResult
+} from '@testing-library/react'
 
 import { SignUp } from '@/presentation/pages'
 import { Helper, ValidationStub } from '@/presentation/test'
+
+const signUpFields = {
+  name: '',
+  email: '',
+  password: '',
+  passwordConfirmation: ''
+}
 
 type SutTypes = {
   sut: RenderResult
@@ -22,6 +34,16 @@ const makeSut = (params?: SutParams): SutTypes => {
   return { sut, validationSpy }
 }
 
+const validateIfShowFieldError = async (
+  fieldName: keyof typeof signUpFields,
+  role: ByRoleMatcher = 'textbox'
+): Promise<void> => {
+  const validationError = faker.random.words()
+  makeSut({ validationError })
+  await Helper.populateFieldAsync(fieldName, role)
+  Helper.testStatusForField(fieldName, validationError)
+}
+
 describe('Login Component', () => {
   afterEach(cleanup)
 
@@ -32,10 +54,9 @@ describe('Login Component', () => {
     expect(spinner).not.toBeInTheDocument()
     expect(errorMessage).not.toBeInTheDocument()
     Helper.testButtonIsDisabled()
-    Helper.testStatusForField('name', validationError)
-    Helper.testStatusForField('email', validationError)
-    Helper.testStatusForField('password', validationError)
-    Helper.testStatusForField('passwordConfirmation', validationError)
+    Object.keys(signUpFields).forEach((field) => {
+      Helper.testStatusForField(field, validationError)
+    })
   })
 
   test('Should call Validation with correct email', async () => {
@@ -47,33 +68,21 @@ describe('Login Component', () => {
   })
 
   test('Should show name error if Validation fails', async () => {
-    const validationError = faker.random.words()
-    makeSut({ validationError })
-    await Helper.populateFieldAsync('name')
-    Helper.testStatusForField('name', validationError)
+    await validateIfShowFieldError('name')
   })
 
   test('Should show email error if Validation fails', async () => {
-    const validationError = faker.random.words()
-    makeSut({ validationError })
-    await Helper.populateFieldAsync('email')
-    Helper.testStatusForField('email', validationError)
+    await validateIfShowFieldError('email')
   })
 
   test('Should show password error if Validation fails', async () => {
-    const validationError = faker.random.words()
-    makeSut({ validationError })
-    await Helper.populateFieldAsync('password', 'password')
-    Helper.testStatusForField('password', validationError)
+    await validateIfShowFieldError('password', 'password')
   })
 
   test('Should show passwordConfirmation error if Validation fails', async () => {
-    const validationError = faker.random.words()
-    makeSut({ validationError })
-    await Helper.populateFieldAsync(
+    await validateIfShowFieldError(
       'passwordConfirmation',
       'passwordConfirmation'
     )
-    Helper.testStatusForField('passwordConfirmation', validationError)
   })
 })
