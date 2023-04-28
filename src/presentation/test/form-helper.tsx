@@ -40,3 +40,13 @@ export const populateFieldAsync = async (
   await user.click(input)
   await user.keyboard(value)
 }
+
+export const validateFieldSucceds = async (
+  sut: () => void,
+  fieldName: string,
+  role: ByRoleMatcher = 'textbox'
+): Promise<void> => {
+  sut()
+  await populateFieldAsync(fieldName, role)
+  testStatusForField(fieldName)
+}

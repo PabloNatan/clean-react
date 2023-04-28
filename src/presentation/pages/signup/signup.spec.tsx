@@ -85,4 +85,24 @@ describe('Login Component', () => {
       'passwordConfirmation'
     )
   })
+
+  test('Should show valid name state  if Validation succeeds', async () => {
+    await Helper.validateFieldSucceds(makeSut, 'name')
+  })
+
+  test('Should show valid email state  if Validation succeeds', async () => {
+    await Helper.validateFieldSucceds(makeSut, 'email')
+  })
+
+  test('Should show valid password state  if Validation succeeds', async () => {
+    await Helper.validateFieldSucceds(makeSut, 'password', 'password')
+  })
+
+  test('Should show valid passwordConfirmation state  if Validation succeeds', async () => {
+    await Helper.validateFieldSucceds(
+      makeSut,
+      'passwordConfirmation',
+      'passwordConfirmation'
+    )
+  })
 })
