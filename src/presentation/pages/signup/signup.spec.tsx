@@ -34,7 +34,7 @@ describe('Login Component', () => {
     Helper.testButtonIsDisabled()
     Helper.testStatusForField('name', validationError)
     Helper.testStatusForField('email', validationError)
-    Helper.testStatusForField('password', 'Campo obrigatório')
+    Helper.testStatusForField('password', validationError)
     Helper.testStatusForField('passwordConfirmation', 'Campo obrigatório')
   })
 
@@ -58,5 +58,12 @@ describe('Login Component', () => {
     makeSut({ validationError })
     await Helper.populateFieldAsync('email')
     Helper.testStatusForField('email', validationError)
+  })
+
+  test('Should show password error if Validation fails', async () => {
+    const validationError = faker.random.words()
+    makeSut({ validationError })
+    await Helper.populateFieldAsync('password', 'password')
+    Helper.testStatusForField('password', validationError)
   })
 })

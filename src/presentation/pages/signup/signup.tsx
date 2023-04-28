@@ -17,6 +17,7 @@ export const SignUp: React.FC<Props> = ({ validation }: Props) => {
   const [state, setState] = useState({
     email: '',
     name: '',
+    password: '',
     isLoading: false,
     nameError: '',
     emailError: '',
@@ -28,6 +29,13 @@ export const SignUp: React.FC<Props> = ({ validation }: Props) => {
   useEffect(() => {
     setState((oldState) => ({
       ...oldState,
+      nameError: validation.validate('name', oldState.name)
+    }))
+  }, [state.name])
+
+  useEffect(() => {
+    setState((oldState) => ({
+      ...oldState,
       emailError: validation.validate('email', oldState.email)
     }))
   }, [state.email])
@@ -35,9 +43,9 @@ export const SignUp: React.FC<Props> = ({ validation }: Props) => {
   useEffect(() => {
     setState((oldState) => ({
       ...oldState,
-      nameError: validation.validate('name', oldState.name)
+      passwordError: validation.validate('password', oldState.password)
     }))
-  }, [state.name])
+  }, [state.password])
 
   return (
     <div className={Styles.login}>
