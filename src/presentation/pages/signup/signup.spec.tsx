@@ -1,44 +1,55 @@
 import React from 'react'
+import { faker } from '@faker-js/faker'
 
-import {
-  cleanup,
-  render,
-  screen,
-  within,
-  type RenderResult
-} from '@testing-library/react'
+import { cleanup, render, type RenderResult } from '@testing-library/react'
 
 import { SignUp } from '@/presentation/pages'
-import { Helper } from '@/presentation/test'
+import { Helper, ValidationStub } from '@/presentation/test'
 
 type SutTypes = {
   sut: RenderResult
+  validationSpy: ValidationStub
 }
 
-const makeSut = (): SutTypes => {
-  const sut = render(<SignUp />)
-  return { sut }
+type SutParams = {
+  validationError: string
+}
+
+const makeSut = (params?: SutParams): SutTypes => {
+  const validationSpy = new ValidationStub()
+  validationSpy.errorMessage = params?.validationError
+  const sut = render(<SignUp validation={validationSpy} />)
+  return { sut, validationSpy }
 }
 
 describe('Login Component', () => {
   afterEach(cleanup)
 
   test('Should start with initial state', () => {
-    const validationError = 'Campo obrigatório'
-    makeSut()
-
-    const formStatus = screen.getByRole('status', { name: /request-feedback/i })
-    const spinner = within(formStatus).queryByLabelText('spinner')
-    const errorMessage = within(formStatus).queryByLabelText('error-message')
+    const validationError = faker.random.words()
+    makeSut({ validationError })
+    const { errorMessage, spinner } = Helper.getFormStatusComponents()
     expect(spinner).not.toBeInTheDocument()
     expect(errorMessage).not.toBeInTheDocument()
-
-    const submitButton = screen.getByRole('button')
-    expect(submitButton).toBeDisabled()
-
-    Helper.testStatusForField('name', validationError)
+    Helper.testButtonIsDisabled()
+    Helper.testStatusForField('name', 'Campo obrigatório')
     Helper.testStatusForField('email', validationError)
-    Helper.testStatusForField('password', validationError)
-    Helper.testStatusForField('passwordConfirmation', validationError)
+    Helper.testStatusForField('password', 'Campo obrigatório')
+    Helper.testStatusForField('passwordConfirmation', 'Campo obrigatório')
+  })
+
+  test('Should call Validation with correct email', async () => {
+    const { validationSpy } = makeSut({ validationError: 'Campo obrigatório' })
+    const email = faker.internet.email()
+    await Helper.populateFieldAsync('email', email)
+    expect(validationSpy.fieldName).toEqual('email')
+    expect(validationSpy.fieldValue).toEqual(email)
+  })
+
+  test('Should show email error if Validation fails', async () => {
+    const validationError = faker.random.words()
+    makeSut({ validationError })
+    await Helper.populateFieldAsync('email')
+    Helper.testStatusForField('email', validationError)
   })
 })

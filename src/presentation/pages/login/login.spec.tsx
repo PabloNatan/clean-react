@@ -3,16 +3,15 @@ import React from 'react'
 
 import {
   AuthenticationSpy,
+  Helper,
   SaveAccessTokenMock,
-  ValidationSpy,
-  Helper
+  ValidationStub
 } from '@/presentation/test'
 import {
   cleanup,
   fireEvent,
   render,
   screen,
-  within,
   type RenderResult
 } from '@testing-library/react'
 import user from '@testing-library/user-event'
@@ -24,7 +23,7 @@ import { RouterProvider, createMemoryRouter } from 'react-router-dom'
 type SutTypes = {
   sut: RenderResult
   history: ReturnType<typeof createMemoryRouter>
-  validationSpy: ValidationSpy
+  validationStub: ValidationStub
   authenticationSpy: AuthenticationSpy
   saveAccessTokenMock: SaveAccessTokenMock
 }
@@ -34,14 +33,14 @@ type SutParams = {
 }
 
 const makeSut = (params?: SutParams): SutTypes => {
-  const validationSpy = new ValidationSpy()
+  const validationStub = new ValidationStub()
   const authenticationSpy = new AuthenticationSpy()
   const saveAccessTokenMock = new SaveAccessTokenMock()
-  validationSpy.errorMessage = params?.validationError
+  validationStub.errorMessage = params?.validationError
 
   const element = (
     <Login
-      validation={validationSpy}
+      validation={validationStub}
       authentication={authenticationSpy}
       saveAccessToken={saveAccessTokenMock}
     />
@@ -67,7 +66,13 @@ const makeSut = (params?: SutParams): SutTypes => {
 
   const sut = render(<RouterProvider router={history} />)
 
-  return { sut, history, validationSpy, authenticationSpy, saveAccessTokenMock }
+  return {
+    sut,
+    history,
+    validationStub,
+    authenticationSpy,
+    saveAccessTokenMock
+  }
 }
 
 const populatePasswordFieldAsync = async (
@@ -105,33 +110,30 @@ describe('Login Component', () => {
     const validationError = faker.random.words()
     makeSut({ validationError })
 
-    const formStatus = screen.getByRole('status', { name: /request-feedback/i })
-    const spinner = within(formStatus).queryByLabelText('spinner')
-    const errorMessage = within(formStatus).queryByLabelText('error-message')
+    const { errorMessage, spinner } = Helper.getFormStatusComponents()
     expect(spinner).not.toBeInTheDocument()
     expect(errorMessage).not.toBeInTheDocument()
 
-    const submitButton = screen.getByRole('button')
-    expect(submitButton).toBeDisabled()
+    Helper.testButtonIsDisabled()
 
     Helper.testStatusForField('email', validationError)
     Helper.testStatusForField('password', validationError)
   })
 
   test('Should call Validation with correct email', async () => {
-    const { validationSpy } = makeSut()
+    const { validationStub } = makeSut()
     const email = faker.internet.email()
     await populateEmailFieldAsync(email)
-    expect(validationSpy.fieldName).toEqual('email')
-    expect(validationSpy.fieldValue).toEqual(email)
+    expect(validationStub.fieldName).toEqual('email')
+    expect(validationStub.fieldValue).toEqual(email)
   })
 
   test('Should call Validation with correct password', async () => {
-    const { validationSpy } = makeSut()
+    const { validationStub } = makeSut()
     const password = faker.internet.password()
     await populatePasswordFieldAsync(password)
-    expect(validationSpy.fieldName).toEqual('password')
-    expect(validationSpy.fieldValue).toEqual(password)
+    expect(validationStub.fieldName).toEqual('password')
+    expect(validationStub.fieldValue).toEqual(password)
   })
 
   test('Should show email error if Validation fails', async () => {
@@ -171,8 +173,7 @@ describe('Login Component', () => {
   test('Should show spinner on submit', async () => {
     makeSut()
     await simulateValidSubmitAsync()
-    const formStatus = screen.getByRole('status', { name: /request-feedback/i })
-    const spinner = within(formStatus).queryByLabelText('spinner')
+    const { spinner } = Helper.getFormStatusComponents()
     expect(spinner).toBeInTheDocument()
   })
 
@@ -227,13 +228,7 @@ describe('Login Component', () => {
 
     await simulateValidSubmitAsync()
 
-    const formStatus = screen.getByRole('status', { name: /request-feedback/i })
-    const spinner = within(formStatus).queryByLabelText('spinner')
-
-    const errorMessage = await within(formStatus).findByLabelText(
-      'error-message'
-    )
-
+    const { errorMessage, spinner } = Helper.getFormStatusComponents()
     expect(spinner).not.toBeInTheDocument()
     expect(errorMessage.textContent).toBe(error.message)
   })
@@ -252,10 +247,7 @@ describe('Login Component', () => {
     const error = new InvalidCredentialsError()
     jest.spyOn(saveAccessTokenMock, 'save').mockRejectedValueOnce(error)
     await simulateValidSubmitAsync()
-    const formStatus = screen.getByRole('status', { name: /request-feedback/i })
-    const errorMessage = await within(formStatus).findByLabelText(
-      'error-message'
-    )
+    const { errorMessage } = Helper.getFormStatusComponents()
     expect(errorMessage.textContent).toBe(error.message)
   })
 
