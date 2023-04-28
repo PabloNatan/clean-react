@@ -32,7 +32,7 @@ describe('Login Component', () => {
     expect(spinner).not.toBeInTheDocument()
     expect(errorMessage).not.toBeInTheDocument()
     Helper.testButtonIsDisabled()
-    Helper.testStatusForField('name', 'Campo obrigatório')
+    Helper.testStatusForField('name', validationError)
     Helper.testStatusForField('email', validationError)
     Helper.testStatusForField('password', 'Campo obrigatório')
     Helper.testStatusForField('passwordConfirmation', 'Campo obrigatório')
@@ -44,6 +44,13 @@ describe('Login Component', () => {
     await Helper.populateFieldAsync('email', 'textbox', email)
     expect(validationSpy.fieldName).toEqual('email')
     expect(validationSpy.fieldValue).toEqual(email)
+  })
+
+  test('Should show name error if Validation fails', async () => {
+    const validationError = faker.random.words()
+    makeSut({ validationError })
+    await Helper.populateFieldAsync('name')
+    Helper.testStatusForField('name', validationError)
   })
 
   test('Should show email error if Validation fails', async () => {

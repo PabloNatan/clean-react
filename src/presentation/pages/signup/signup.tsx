@@ -16,8 +16,9 @@ type Props = {
 export const SignUp: React.FC<Props> = ({ validation }: Props) => {
   const [state, setState] = useState({
     email: '',
+    name: '',
     isLoading: false,
-    nameError: 'Campo obrigatório',
+    nameError: '',
     emailError: '',
     passwordError: 'Campo obrigatório',
     passwordConfirmationError: 'Campo obrigatório',
@@ -30,6 +31,13 @@ export const SignUp: React.FC<Props> = ({ validation }: Props) => {
       emailError: validation.validate('email', oldState.email)
     }))
   }, [state.email])
+
+  useEffect(() => {
+    setState((oldState) => ({
+      ...oldState,
+      nameError: validation.validate('name', oldState.name)
+    }))
+  }, [state.name])
 
   return (
     <div className={Styles.login}>
