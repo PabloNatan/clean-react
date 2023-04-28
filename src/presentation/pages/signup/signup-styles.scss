@@ -1,0 +1,49 @@
+@import '@/presentation/styles/colors';
+
+.login {
+  display: flex;
+  flex-direction: column;
+  height: 100vh;
+  justify-content: space-between;
+
+  .form {
+    display: flex;
+    flex-direction: column;
+    align-self: center;
+    width: 100%;
+    max-width: 400px;
+    background-color: $white;
+    border-radius: 8px;
+    padding: 40px;
+    box-shadow: 0px 1px 3px -1px $black;
+
+    h2 {
+      color: $primaryDark;
+      text-transform: uppercase;
+      font-size: 20px;
+      text-align: center;
+      font-weight: bold;
+    }
+
+    button[type='submit'] {
+      margin-top: 32px;
+    }
+
+    .signUpLink {
+      display: inline;
+      align-self: center;
+      text-align: center;
+      margin-top: 16px;
+      font-size: 16px;
+      color: $primary;
+      text-transform: lowercase;
+      cursor: pointer;
+      transition: border-bottom 0.2s;
+      border-bottom: 2px solid transparent;
+
+      &:hover {
+        border-bottom-color: $primary;
+      }
+    }
+  }
+}
