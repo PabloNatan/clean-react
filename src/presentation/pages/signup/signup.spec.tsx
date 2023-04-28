@@ -191,4 +191,11 @@ describe('Login Component', () => {
       passwordConfirmation
     })
   })
+
+  test('should call Authentication only once', async () => {
+    const { addAccountSpy } = makeSut()
+    await simulateValidSubmitAsync()
+    await simulateValidSubmitAsync()
+    expect(addAccountSpy.callsCount).toBe(1)
+  })
 })

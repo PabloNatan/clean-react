@@ -170,6 +170,7 @@ describe('Login Component', () => {
   test('should call Authentication only once', async () => {
     const { authenticationSpy } = makeSut()
     await simulateValidSubmitAsync()
+    await simulateValidSubmitAsync()
     const submitButton = screen.queryByRole('button', { name: /signIn/i })
     await user.click(submitButton)
 

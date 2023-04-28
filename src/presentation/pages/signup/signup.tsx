@@ -64,6 +64,9 @@ export const SignUp: React.FC<Props> = ({ validation, addAccount }: Props) => {
     event: React.FormEvent<HTMLFormElement>
   ): Promise<void> {
     event.preventDefault()
+    if (state.isLoading) {
+      return
+    }
     setState((oldState) => ({
       ...oldState,
       isLoading: true
