@@ -5,7 +5,8 @@ import {
   type ByRoleMatcher,
   cleanup,
   render,
-  type RenderResult
+  type RenderResult,
+  screen
 } from '@testing-library/react'
 
 import { SignUp } from '@/presentation/pages'
@@ -104,5 +105,18 @@ describe('Login Component', () => {
       'passwordConfirmation',
       'passwordConfirmation'
     )
+  })
+
+  test('Should enable submit button if form is valid', async () => {
+    makeSut()
+    const submitButton = screen.getByRole('button')
+    await Helper.populateFieldAsync('name')
+    await Helper.populateFieldAsync('email')
+    await Helper.populateFieldAsync('password', 'password')
+    await Helper.populateFieldAsync(
+      'passwordConfirmation',
+      'passwordConfirmation'
+    )
+    expect(submitButton).toBeEnabled()
   })
 })

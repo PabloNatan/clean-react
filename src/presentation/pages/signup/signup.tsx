@@ -19,11 +19,11 @@ export const SignUp: React.FC<Props> = ({ validation }: Props) => {
     name: '',
     password: '',
     passwordConfirmation: '',
-    isLoading: false,
     nameError: '',
     emailError: '',
     passwordError: '',
     passwordConfirmationError: '',
+    isLoading: false,
     mainError: ''
   })
 
@@ -58,6 +58,12 @@ export const SignUp: React.FC<Props> = ({ validation }: Props) => {
     }))
   }, [state.passwordConfirmation])
 
+  const isFormInvalid =
+    !!state.nameError ||
+    !!state.emailError ||
+    !!state.passwordError ||
+    !!state.passwordConfirmationError
+
   return (
     <div className={Styles.login}>
       <LoginHeader />
@@ -78,7 +84,7 @@ export const SignUp: React.FC<Props> = ({ validation }: Props) => {
             role="passwordConfirmation"
             placeholder="Digite sua senha"
           />
-          <button type="submit" disabled>
+          <button type="submit" disabled={isFormInvalid}>
             Entrar
           </button>
           <span className={Styles.signUpLink}>Voltar Para Login</span>
