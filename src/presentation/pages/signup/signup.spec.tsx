@@ -41,7 +41,7 @@ describe('Login Component', () => {
   test('Should call Validation with correct email', async () => {
     const { validationSpy } = makeSut({ validationError: 'Campo obrigatório' })
     const email = faker.internet.email()
-    await Helper.populateFieldAsync('email', email)
+    await Helper.populateFieldAsync('email', 'textbox', email)
     expect(validationSpy.fieldName).toEqual('email')
     expect(validationSpy.fieldValue).toEqual(email)
   })

@@ -30,8 +30,8 @@ export const getFormStatusComponents = (): {
 
 export const populateFieldAsync = async (
   label: string,
-  value = faker.random.word(),
-  role: ByRoleMatcher = 'textbox'
+  role: ByRoleMatcher = 'textbox',
+  value = faker.random.word()
 ): Promise<void> => {
   const input = screen.getByRole(role, {
     name: new RegExp(`${label}$`, 'i')

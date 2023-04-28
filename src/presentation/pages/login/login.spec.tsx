@@ -75,30 +75,12 @@ const makeSut = (params?: SutParams): SutTypes => {
   }
 }
 
-const populatePasswordFieldAsync = async (
-  password = faker.internet.password()
-): Promise<void> => {
-  const passwordInput = screen.getByRole('password', { name: /password/i })
-  await user.clear(passwordInput)
-  await user.click(passwordInput)
-  await user.keyboard(password)
-}
-
-const populateEmailFieldAsync = async (
-  email = faker.internet.email()
-): Promise<void> => {
-  const emailInput = screen.getByRole('textbox', { name: /email/i })
-  await user.clear(emailInput)
-  await user.click(emailInput)
-  await user.keyboard(email)
-}
-
 const simulateValidSubmitAsync = async (
   email = faker.internet.email(),
   password = faker.internet.password()
 ): Promise<void> => {
-  await populateEmailFieldAsync(email)
-  await populatePasswordFieldAsync(password)
+  await Helper.populateFieldAsync('email', 'textbox', email)
+  await Helper.populateFieldAsync('password', 'password', password)
   const submitButton = screen.getByRole('button')
   await user.click(submitButton)
 }
@@ -123,7 +105,7 @@ describe('Login Component', () => {
   test('Should call Validation with correct email', async () => {
     const { validationStub } = makeSut()
     const email = faker.internet.email()
-    await populateEmailFieldAsync(email)
+    await Helper.populateFieldAsync('email', 'textbox', email)
     expect(validationStub.fieldName).toEqual('email')
     expect(validationStub.fieldValue).toEqual(email)
   })
@@ -131,7 +113,7 @@ describe('Login Component', () => {
   test('Should call Validation with correct password', async () => {
     const { validationStub } = makeSut()
     const password = faker.internet.password()
-    await populatePasswordFieldAsync(password)
+    await Helper.populateFieldAsync('password', 'password', password)
     expect(validationStub.fieldName).toEqual('password')
     expect(validationStub.fieldValue).toEqual(password)
   })
@@ -139,34 +121,34 @@ describe('Login Component', () => {
   test('Should show email error if Validation fails', async () => {
     const validationError = faker.random.words()
     makeSut({ validationError })
-    await populateEmailFieldAsync()
+    await Helper.populateFieldAsync('email')
     Helper.testStatusForField('email', validationError)
   })
 
   test('Should show password error if Validation fails', async () => {
     const validationError = faker.random.words()
     makeSut({ validationError })
-    await populatePasswordFieldAsync()
+    await Helper.populateFieldAsync('password', 'password')
     Helper.testStatusForField('password', validationError)
   })
 
   test('Should show valid password state  if Validation succeeds', async () => {
     makeSut()
-    await populatePasswordFieldAsync()
+    await Helper.populateFieldAsync('password', 'password')
     Helper.testStatusForField('password')
   })
 
   test('Should show valid email state  if Validation succeeds', async () => {
     makeSut()
-    await populateEmailFieldAsync()
+    await Helper.populateFieldAsync('email', 'textbox', faker.internet.email())
     Helper.testStatusForField('email')
   })
 
   test('Should enable submit button if form is valid', async () => {
     makeSut()
     const submitButton = screen.getByRole('button')
-    await populateEmailFieldAsync()
-    await populatePasswordFieldAsync()
+    await Helper.populateFieldAsync('email')
+    await Helper.populateFieldAsync('password', 'password')
     expect(submitButton).toBeEnabled()
   })
 
@@ -196,7 +178,7 @@ describe('Login Component', () => {
 
   test('Should not call Authentication if password is not provided', async () => {
     const { authenticationSpy } = makeSut()
-    await populateEmailFieldAsync()
+    await Helper.populateFieldAsync('email')
     const form = screen.getByRole('form')
     fireEvent.submit(form)
     expect(authenticationSpy.callsCount).toBe(0)
@@ -204,7 +186,7 @@ describe('Login Component', () => {
 
   test('Should not call Authentication if email is not provided', async () => {
     const { authenticationSpy } = makeSut()
-    await populatePasswordFieldAsync()
+    await Helper.populateFieldAsync('password', 'password')
     const form = screen.getByRole('form')
     fireEvent.submit(form)
     expect(authenticationSpy.callsCount).toBe(0)
@@ -213,8 +195,8 @@ describe('Login Component', () => {
   test('Should not call Authentication if invalid email provided', async () => {
     const validationError = faker.random.words()
     const { authenticationSpy } = makeSut({ validationError })
-    await populatePasswordFieldAsync()
-    await populatePasswordFieldAsync()
+    await Helper.populateFieldAsync('password', 'password')
+    await Helper.populateFieldAsync('email')
     const form = screen.getByRole('form')
     fireEvent.submit(form)
     expect(authenticationSpy.callsCount).toBe(0)
