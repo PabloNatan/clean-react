@@ -1,6 +1,6 @@
 import React from 'react'
 import { faker } from '@faker-js/faker'
-
+import user from '@testing-library/user-event'
 import {
   type ByRoleMatcher,
   cleanup,
@@ -33,6 +33,25 @@ const makeSut = (params?: SutParams): SutTypes => {
   validationSpy.errorMessage = params?.validationError
   const sut = render(<SignUp validation={validationSpy} />)
   return { sut, validationSpy }
+}
+
+const simulateValidSubmitAsync = async (
+  name = faker.name.fullName(),
+  email = faker.internet.email(),
+  password = faker.internet.password(),
+  inputPasswordConfirmation?: string
+): Promise<void> => {
+  const passwordConfirmation = inputPasswordConfirmation || password
+  await Helper.populateFieldAsync('name', 'textbox', name)
+  await Helper.populateFieldAsync('email', 'textbox', email)
+  await Helper.populateFieldAsync('password', 'password', password)
+  await Helper.populateFieldAsync(
+    'passwordConfirmation',
+    'passwordConfirmation',
+    passwordConfirmation
+  )
+  const submitButton = screen.getByRole('button')
+  await user.click(submitButton)
 }
 
 const validateIfShowFieldError = async (
@@ -145,5 +164,12 @@ describe('Login Component', () => {
       'passwordConfirmation'
     )
     expect(submitButton).toBeEnabled()
+  })
+
+  test('Should show spinner on submit', async () => {
+    makeSut()
+    await simulateValidSubmitAsync()
+    const { spinner } = Helper.getFormStatusComponents()
+    expect(spinner).toBeInTheDocument()
   })
 })
