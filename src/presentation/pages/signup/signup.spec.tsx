@@ -10,7 +10,7 @@ import {
 } from '@testing-library/react'
 
 import { SignUp } from '@/presentation/pages'
-import { Helper, ValidationStub } from '@/presentation/test'
+import { AddAccountSpy, Helper, ValidationStub } from '@/presentation/test'
 
 const signUpFields = {
   name: '',
@@ -22,6 +22,7 @@ const signUpFields = {
 type SutTypes = {
   sut: RenderResult
   validationSpy: ValidationStub
+  addAccountSpy: AddAccountSpy
 }
 
 type SutParams = {
@@ -31,8 +32,11 @@ type SutParams = {
 const makeSut = (params?: SutParams): SutTypes => {
   const validationSpy = new ValidationStub()
   validationSpy.errorMessage = params?.validationError
-  const sut = render(<SignUp validation={validationSpy} />)
-  return { sut, validationSpy }
+  const addAccountSpy = new AddAccountSpy()
+  const sut = render(
+    <SignUp validation={validationSpy} addAccount={addAccountSpy} />
+  )
+  return { sut, validationSpy, addAccountSpy }
 }
 
 const simulateValidSubmitAsync = async (
@@ -171,5 +175,20 @@ describe('Login Component', () => {
     await simulateValidSubmitAsync()
     const { spinner } = Helper.getFormStatusComponents()
     expect(spinner).toBeInTheDocument()
+  })
+
+  test('Should call AddAccount with correct values', async () => {
+    const { addAccountSpy } = makeSut()
+    const name = faker.name.fullName()
+    const email = faker.internet.email()
+    const password = faker.internet.password()
+    const passwordConfirmation = password
+    await simulateValidSubmitAsync(name, email, password, passwordConfirmation)
+    expect(addAccountSpy.params).toEqual({
+      name,
+      email,
+      password,
+      passwordConfirmation
+    })
   })
 })

@@ -8,12 +8,14 @@ import { FormContext } from '@/presentation/contexts/form/form-context'
 import React, { useEffect, useState } from 'react'
 import Styles from './signup-styles.scss'
 import { type Validation } from '@/presentation/protocols/validation'
+import { type AddAccount } from '@/domain/usecases'
 
 type Props = {
   validation: Validation
+  addAccount: AddAccount
 }
 
-export const SignUp: React.FC<Props> = ({ validation }: Props) => {
+export const SignUp: React.FC<Props> = ({ validation, addAccount }: Props) => {
   const [state, setState] = useState({
     email: '',
     name: '',
@@ -66,6 +68,12 @@ export const SignUp: React.FC<Props> = ({ validation }: Props) => {
       ...oldState,
       isLoading: true
     }))
+    addAccount.add({
+      name: state.name,
+      email: state.email,
+      password: state.password,
+      passwordConfirmation: state.passwordConfirmation
+    })
   }
 
   const isFormInvalid =
