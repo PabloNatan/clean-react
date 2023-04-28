@@ -4,7 +4,8 @@ import React from 'react'
 import {
   AuthenticationSpy,
   SaveAccessTokenMock,
-  ValidationSpy
+  ValidationSpy,
+  Helper
 } from '@/presentation/test'
 import {
   cleanup,
@@ -97,14 +98,6 @@ const simulateValidSubmitAsync = async (
   await user.click(submitButton)
 }
 
-const testStatusForField = (field: string, validationError?: string): void => {
-  const status = screen.getByRole('status', {
-    name: new RegExp(`status-${field}`)
-  })
-  expect(status).toHaveClass(validationError ? 'error' : 'success')
-  expect(status.title).toBe(validationError || 'Tudo certo!')
-}
-
 describe('Login Component', () => {
   afterEach(cleanup)
 
@@ -121,8 +114,8 @@ describe('Login Component', () => {
     const submitButton = screen.getByRole('button')
     expect(submitButton).toBeDisabled()
 
-    testStatusForField('email', validationError)
-    testStatusForField('password', validationError)
+    Helper.testStatusForField('email', validationError)
+    Helper.testStatusForField('password', validationError)
   })
 
   test('Should call Validation with correct email', async () => {
@@ -145,26 +138,26 @@ describe('Login Component', () => {
     const validationError = faker.random.words()
     makeSut({ validationError })
     await populateEmailFieldAsync()
-    testStatusForField('email', validationError)
+    Helper.testStatusForField('email', validationError)
   })
 
   test('Should show password error if Validation fails', async () => {
     const validationError = faker.random.words()
     makeSut({ validationError })
     await populatePasswordFieldAsync()
-    testStatusForField('password', validationError)
+    Helper.testStatusForField('password', validationError)
   })
 
   test('Should show valid password state  if Validation succeeds', async () => {
     makeSut()
     await populatePasswordFieldAsync()
-    testStatusForField('password')
+    Helper.testStatusForField('password')
   })
 
   test('Should show valid email state  if Validation succeeds', async () => {
     makeSut()
     await populateEmailFieldAsync()
-    testStatusForField('email')
+    Helper.testStatusForField('email')
   })
 
   test('Should enable submit button if form is valid', async () => {
