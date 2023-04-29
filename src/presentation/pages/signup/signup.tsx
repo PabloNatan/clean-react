@@ -40,12 +40,14 @@ export const SignUp: React.FC<Props> = ({
 
   useEffect(() => {
     setState((oldState) => {
-      const nameError = validation.validate('name', oldState.name)
-      const emailError = validation.validate('email', oldState.email)
-      const passwordError = validation.validate('password', oldState.password)
+      const { name, email, password, passwordConfirmation } = oldState
+      const formData = { name, email, password, passwordConfirmation }
+      const nameError = validation.validate('name', formData)
+      const emailError = validation.validate('email', formData)
+      const passwordError = validation.validate('password', formData)
       const passwordConfirmationError = validation.validate(
         'passwordConfirmation',
-        oldState.passwordConfirmation
+        formData
       )
 
       return {

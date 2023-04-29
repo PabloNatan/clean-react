@@ -36,8 +36,10 @@ export const Login: React.FC<Props> = ({
 
   useEffect(() => {
     setState((oldState) => {
-      const emailError = validation.validate('email', oldState.email)
-      const passwordError = validation.validate('password', oldState.password)
+      const { email, password } = oldState
+      const formData = { email, password }
+      const emailError = validation.validate('email', formData)
+      const passwordError = validation.validate('password', formData)
       return {
         ...oldState,
         emailError,
