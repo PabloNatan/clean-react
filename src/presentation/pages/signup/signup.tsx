@@ -29,6 +29,12 @@ export const SignUp: React.FC<Props> = ({ validation, addAccount }: Props) => {
     mainError: ''
   })
 
+  const isFormInvalid =
+    !!state.nameError ||
+    !!state.emailError ||
+    !!state.passwordError ||
+    !!state.passwordConfirmationError
+
   useEffect(() => {
     setState((oldState) => ({
       ...oldState,
@@ -64,7 +70,7 @@ export const SignUp: React.FC<Props> = ({ validation, addAccount }: Props) => {
     event: React.FormEvent<HTMLFormElement>
   ): Promise<void> {
     event.preventDefault()
-    if (state.isLoading) {
+    if (state.isLoading || isFormInvalid) {
       return
     }
     setState((oldState) => ({
@@ -78,12 +84,6 @@ export const SignUp: React.FC<Props> = ({ validation, addAccount }: Props) => {
       passwordConfirmation: state.passwordConfirmation
     })
   }
-
-  const isFormInvalid =
-    !!state.nameError ||
-    !!state.emailError ||
-    !!state.passwordError ||
-    !!state.passwordConfirmationError
 
   return (
     <div className={Styles.login}>
