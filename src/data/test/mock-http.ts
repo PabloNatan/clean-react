@@ -1,9 +1,16 @@
+import { faker } from '@faker-js/faker'
 import {
-  type HttpPostClient,
   type HttpResponse,
+  type HttpPostParams,
   HttpStatusCode,
-  type HttpPostParams
+  type HttpPostClient
 } from '../protocols/http'
+import { randomObject } from '@/test'
+
+export const mockPostRequest = (): HttpPostParams<any> => ({
+  url: faker.internet.url(),
+  body: randomObject
+})
 
 export class HttpPostClientSpy<T, R> implements HttpPostClient<T, R> {
   url?: string
