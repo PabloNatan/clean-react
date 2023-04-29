@@ -9,7 +9,7 @@ import React, { useEffect, useState } from 'react'
 import Styles from './signup-styles.scss'
 import { type Validation } from '@/presentation/protocols/validation'
 import { type SaveAccessToken, type AddAccount } from '@/domain/usecases'
-import { useNavigate } from 'react-router-dom'
+import { Link, useNavigate } from 'react-router-dom'
 
 type Props = {
   validation: Validation
@@ -94,7 +94,6 @@ export const SignUp: React.FC<Props> = ({
       await saveAccessToken.save(account.accessToken)
       navigate('/')
     } catch (error) {
-      console.log('Calling an errors')
       setState((oldState) => ({
         ...oldState,
         mainError: error.message,
@@ -126,7 +125,9 @@ export const SignUp: React.FC<Props> = ({
           <button type="submit" disabled={isFormInvalid}>
             Entrar
           </button>
-          <span className={Styles.signUpLink}>Voltar Para Login</span>
+          <Link to="/login" className={Styles.signUpLink}>
+            Voltar Para Login
+          </Link>
           <FormStatus />
         </form>
       </FormContext.Provider>

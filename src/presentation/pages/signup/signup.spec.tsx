@@ -266,4 +266,11 @@ describe('Login Component', () => {
     const { errorMessage } = Helper.getFormStatusComponents()
     expect(errorMessage.textContent).toBe(error.message)
   })
+
+  test('Should go to login page', async () => {
+    const { history } = makeSut()
+    const loginButton = screen.getByRole('link')
+    await user.click(loginButton)
+    expect(history.state.location.pathname).toBe('/login')
+  })
 })
