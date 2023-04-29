@@ -10,8 +10,14 @@ import {
 } from '@testing-library/react'
 
 import { SignUp } from '@/presentation/pages'
-import { AddAccountSpy, Helper, ValidationStub } from '@/presentation/test'
+import {
+  AddAccountSpy,
+  Helper,
+  SaveAccessTokenMock,
+  ValidationStub
+} from '@/presentation/test'
 import { EmailInUseError } from '@/domain/errors'
+import { RouterProvider, createMemoryRouter } from 'react-router-dom'
 
 const signUpFields = {
   name: '',
@@ -22,8 +28,10 @@ const signUpFields = {
 
 type SutTypes = {
   sut: RenderResult
+  history: ReturnType<typeof createMemoryRouter>
   validationSpy: ValidationStub
   addAccountSpy: AddAccountSpy
+  saveAccessTokenMock: SaveAccessTokenMock
 }
 
 type SutParams = {
@@ -34,10 +42,34 @@ const makeSut = (params?: SutParams): SutTypes => {
   const validationSpy = new ValidationStub()
   validationSpy.errorMessage = params?.validationError
   const addAccountSpy = new AddAccountSpy()
-  const sut = render(
-    <SignUp validation={validationSpy} addAccount={addAccountSpy} />
+  const saveAccessTokenMock = new SaveAccessTokenMock()
+  const element = (
+    <SignUp
+      validation={validationSpy}
+      addAccount={addAccountSpy}
+      saveAccessToken={saveAccessTokenMock}
+    />
   )
-  return { sut, validationSpy, addAccountSpy }
+  const history = createMemoryRouter(
+    [
+      { path: '/signup', element },
+      {
+        path: '/login',
+        element
+      },
+      {
+        path: '/',
+        element
+      }
+    ],
+    {
+      initialIndex: 0,
+      initialEntries: ['/signup']
+    }
+  )
+
+  const sut = render(<RouterProvider router={history} />)
+  return { sut, validationSpy, addAccountSpy, saveAccessTokenMock, history }
 }
 
 const simulateValidSubmitAsync = async (
@@ -210,13 +242,19 @@ describe('Login Component', () => {
   test('Should present error if Authentication fails', async () => {
     const { addAccountSpy } = makeSut()
     const error = new EmailInUseError()
-
     jest.spyOn(addAccountSpy, 'add').mockRejectedValueOnce(error)
-
     await simulateValidSubmitAsync()
-
     const { errorMessage, spinner } = Helper.getFormStatusComponents()
     expect(spinner).not.toBeInTheDocument()
     expect(errorMessage.textContent).toBe(error.message)
+  })
+
+  test('Should call SaveAccessToken on success', async () => {
+    const { addAccountSpy, history, saveAccessTokenMock } = makeSut()
+    await simulateValidSubmitAsync()
+    expect(saveAccessTokenMock.accessToken).toBe(
+      addAccountSpy.account.accessToken
+    )
+    expect(history.state.location.pathname).toBe('/')
   })
 })
