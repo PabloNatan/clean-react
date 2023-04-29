@@ -257,4 +257,13 @@ describe('Login Component', () => {
     )
     expect(history.state.location.pathname).toBe('/')
   })
+
+  test('Should present error if SaveAccessToken fails', async () => {
+    const { addAccountSpy } = makeSut()
+    const error = new EmailInUseError()
+    jest.spyOn(addAccountSpy, 'add').mockRejectedValueOnce(error)
+    await simulateValidSubmitAsync()
+    const { errorMessage } = Helper.getFormStatusComponents()
+    expect(errorMessage.textContent).toBe(error.message)
+  })
 })
