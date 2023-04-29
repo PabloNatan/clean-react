@@ -11,6 +11,7 @@ import {
 
 import { SignUp } from '@/presentation/pages'
 import { AddAccountSpy, Helper, ValidationStub } from '@/presentation/test'
+import { EmailInUseError } from '@/domain/errors'
 
 const signUpFields = {
   name: '',
@@ -204,5 +205,18 @@ describe('Login Component', () => {
     const { addAccountSpy } = makeSut({ validationError })
     await simulateValidSubmitAsync()
     expect(addAccountSpy.callsCount).toBe(0)
+  })
+
+  test('Should present error if Authentication fails', async () => {
+    const { addAccountSpy } = makeSut()
+    const error = new EmailInUseError()
+
+    jest.spyOn(addAccountSpy, 'add').mockRejectedValueOnce(error)
+
+    await simulateValidSubmitAsync()
+
+    const { errorMessage, spinner } = Helper.getFormStatusComponents()
+    expect(spinner).not.toBeInTheDocument()
+    expect(errorMessage.textContent).toBe(error.message)
   })
 })
