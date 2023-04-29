@@ -18,6 +18,9 @@ const makeSut = (url: string = faker.internet.url()): SutTypes => {
     AddAccountParams,
     AccountModel
   >()
+  httpPostClientSpy.response = {
+    statusCode: HttpStatusCode.created
+  }
   const sut = new RemoteAddAccount(url, httpPostClientSpy)
   return {
     sut,
@@ -72,7 +75,7 @@ describe('RemoteAddAccount', () => {
     const { sut, httpPostClientSpy } = makeSut()
     const httpResult = mockAccountModel()
     httpPostClientSpy.response = {
-      statusCode: HttpStatusCode.ok,
+      statusCode: HttpStatusCode.created,
       body: httpResult
     }
     const account = await sut.add(mockAddAccount())
