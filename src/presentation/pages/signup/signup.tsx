@@ -2,7 +2,8 @@ import {
   Footer,
   FormStatus,
   Input,
-  LoginHeader
+  LoginHeader,
+  SubmitButton
 } from '@/presentation/components'
 import { FormContext } from '@/presentation/contexts/form/form-context'
 import React, { useEffect, useState } from 'react'
@@ -33,52 +34,41 @@ export const SignUp: React.FC<Props> = ({
     passwordError: '',
     passwordConfirmationError: '',
     isLoading: false,
+    isFormValid: false,
     mainError: ''
   })
 
-  const isFormInvalid =
-    !!state.nameError ||
-    !!state.emailError ||
-    !!state.passwordError ||
-    !!state.passwordConfirmationError
-
   useEffect(() => {
-    setState((oldState) => ({
-      ...oldState,
-      nameError: validation.validate('name', oldState.name)
-    }))
-  }, [state.name])
-
-  useEffect(() => {
-    setState((oldState) => ({
-      ...oldState,
-      emailError: validation.validate('email', oldState.email)
-    }))
-  }, [state.email])
-
-  useEffect(() => {
-    setState((oldState) => ({
-      ...oldState,
-      passwordError: validation.validate('password', oldState.password)
-    }))
-  }, [state.password])
-
-  useEffect(() => {
-    setState((oldState) => ({
-      ...oldState,
-      passwordConfirmationError: validation.validate(
+    setState((oldState) => {
+      const nameError = validation.validate('name', oldState.name)
+      const emailError = validation.validate('email', oldState.email)
+      const passwordError = validation.validate('password', oldState.password)
+      const passwordConfirmationError = validation.validate(
         'passwordConfirmation',
         oldState.passwordConfirmation
       )
-    }))
-  }, [state.passwordConfirmation])
+
+      return {
+        ...oldState,
+        nameError,
+        emailError,
+        passwordError,
+        passwordConfirmationError,
+        isFormValid:
+          !nameError &&
+          !emailError &&
+          !passwordError &&
+          !passwordConfirmationError
+      }
+    })
+  }, [state.name, state.email, state.password, state.passwordConfirmation])
 
   async function handleSubmit(
     event: React.FormEvent<HTMLFormElement>
   ): Promise<void> {
     event.preventDefault()
     try {
-      if (state.isLoading || isFormInvalid) {
+      if (state.isLoading || !state.isFormValid) {
         return
       }
       setState((oldState) => ({
@@ -122,9 +112,7 @@ export const SignUp: React.FC<Props> = ({
             role="passwordConfirmation"
             placeholder="Digite sua senha"
           />
-          <button type="submit" disabled={isFormInvalid}>
-            Entrar
-          </button>
+          <SubmitButton text="Cadastrar" />
           <Link to="/login" className={Styles.signUpLink}>
             Voltar Para Login
           </Link>

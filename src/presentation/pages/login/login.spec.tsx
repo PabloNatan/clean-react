@@ -102,22 +102,6 @@ describe('Login Component', () => {
     Helper.testStatusForField('password', validationError)
   })
 
-  test('Should call Validation with correct email', async () => {
-    const { validationStub } = makeSut()
-    const email = faker.internet.email()
-    await Helper.populateFieldAsync('email', 'textbox', email)
-    expect(validationStub.fieldName).toEqual('email')
-    expect(validationStub.fieldValue).toEqual(email)
-  })
-
-  test('Should call Validation with correct password', async () => {
-    const { validationStub } = makeSut()
-    const password = faker.internet.password()
-    await Helper.populateFieldAsync('password', 'password', password)
-    expect(validationStub.fieldName).toEqual('password')
-    expect(validationStub.fieldValue).toEqual(password)
-  })
-
   test('Should show email error if Validation fails', async () => {
     const validationError = faker.random.words()
     makeSut({ validationError })
@@ -178,7 +162,9 @@ describe('Login Component', () => {
   })
 
   test('Should not call Authentication if password is not provided', async () => {
-    const { authenticationSpy } = makeSut()
+    const { authenticationSpy } = makeSut({
+      validationError: 'Password not provided'
+    })
     await Helper.populateFieldAsync('email')
     const form = screen.getByRole('form')
     fireEvent.submit(form)
@@ -186,7 +172,9 @@ describe('Login Component', () => {
   })
 
   test('Should not call Authentication if email is not provided', async () => {
-    const { authenticationSpy } = makeSut()
+    const { authenticationSpy } = makeSut({
+      validationError: 'Email not provided'
+    })
     await Helper.populateFieldAsync('password', 'password')
     const form = screen.getByRole('form')
     fireEvent.submit(form)

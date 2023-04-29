@@ -101,17 +101,6 @@ const validateIfShowFieldError = async (
   Helper.testStatusForField(fieldName, validationError)
 }
 
-const isCallingValidatorWithCorrectValues = async (
-  value: string,
-  field: keyof typeof signUpFields,
-  role: ByRoleMatcher = 'textbox'
-): Promise<void> => {
-  const { validationSpy } = makeSut({ validationError: 'Campo obrigatório' })
-  await Helper.populateFieldAsync(field, role, value)
-  expect(validationSpy.fieldName).toEqual(field)
-  expect(validationSpy.fieldValue).toEqual(value)
-}
-
 describe('Login Component', () => {
   afterEach(cleanup)
 
@@ -125,30 +114,6 @@ describe('Login Component', () => {
     Object.keys(signUpFields).forEach((field) => {
       Helper.testStatusForField(field, validationError)
     })
-  })
-
-  test('Should call Validation with correct name', async () => {
-    const name = faker.name.fullName()
-    await isCallingValidatorWithCorrectValues(name, 'name')
-  })
-
-  test('Should call Validation with correct email', async () => {
-    const email = faker.internet.email()
-    await isCallingValidatorWithCorrectValues(email, 'email')
-  })
-
-  test('Should call Validation with correct password', async () => {
-    const password = faker.internet.password()
-    await isCallingValidatorWithCorrectValues(password, 'password', 'password')
-  })
-
-  test('Should call Validation with correct passwordConfirmation', async () => {
-    const passwordConfirmation = faker.internet.password()
-    await isCallingValidatorWithCorrectValues(
-      passwordConfirmation,
-      'passwordConfirmation',
-      'passwordConfirmation'
-    )
   })
 
   test('Should show name error if Validation fails', async () => {

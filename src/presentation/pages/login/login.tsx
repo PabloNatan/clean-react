@@ -3,7 +3,8 @@ import {
   Footer,
   FormStatus,
   Input,
-  LoginHeader
+  LoginHeader,
+  SubmitButton
 } from '@/presentation/components'
 import { FormContext } from '@/presentation/contexts/form/form-context'
 import { type Validation } from '@/presentation/protocols/validation'
@@ -29,35 +30,29 @@ export const Login: React.FC<Props> = ({
     password: '',
     emailError: '',
     passwordError: '',
-    mainError: ''
+    mainError: '',
+    isFormValid: false
   })
 
-  const isFormInvalid =
-    !!state.emailError ||
-    !!state.passwordError ||
-    !state.email ||
-    !state.password
-
   useEffect(() => {
-    setState((oldState) => ({
-      ...oldState,
-      emailError: validation.validate('email', oldState.email)
-    }))
-  }, [state.email])
-
-  useEffect(() => {
-    setState((oldState) => ({
-      ...oldState,
-      passwordError: validation.validate('password', oldState.password)
-    }))
-  }, [state.password])
+    setState((oldState) => {
+      const emailError = validation.validate('email', oldState.email)
+      const passwordError = validation.validate('password', oldState.password)
+      return {
+        ...oldState,
+        emailError,
+        passwordError,
+        isFormValid: !emailError && !passwordError
+      }
+    })
+  }, [state.email, state.password])
 
   async function handleSubmit(
     event: React.FormEvent<HTMLFormElement>
   ): Promise<void> {
     event.preventDefault()
     try {
-      if (state.isLoading || isFormInvalid) {
+      if (state.isLoading || !state.isFormValid) {
         return
       }
       setState((oldState) => ({ ...oldState, isLoading: true }))
@@ -95,9 +90,7 @@ export const Login: React.FC<Props> = ({
             role="password"
             placeholder="Digite sua senha"
           />
-          <button type="submit" disabled={isFormInvalid}>
-            Entrar
-          </button>
+          <SubmitButton text="Entrar" />
           <Link to="/signup" className={Styles.signUpLink}>
             Criar contar
           </Link>
