@@ -10,6 +10,6 @@ export class EmailValidation implements FieldValidation {
 
     return !input[this.field] || isEmailValid.test(input[this.field])
       ? null
-      : new InvalidFieldError('email')
+      : new InvalidFieldError()
   }
 }

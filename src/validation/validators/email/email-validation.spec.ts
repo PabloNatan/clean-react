@@ -9,7 +9,7 @@ describe('EmailValidation', () => {
     const field = faker.database.column()
     const sut = makeSut(field)
     const error = sut.validate({ [field]: faker.random.word() })
-    expect(error).toEqual(new InvalidFieldError('email'))
+    expect(error).toEqual(new InvalidFieldError())
   })
 
   test('Should return falsy if email is valid', () => {
