@@ -58,7 +58,7 @@ describe('Login', () => {
       .focus()
       .type(faker.random.alphaNumeric(6))
 
-    cy.intercept('POST', '/auth/login', {
+    cy.intercept('POST', /login/i, {
       statusCode: 401,
       delay: 500
     })
@@ -82,6 +82,14 @@ describe('Login', () => {
   it('Should present save accessToken if valid credentials are provided', () => {
     cy.getByRoleAndLabel('email').focus().type('pablo@email.com')
     cy.getByRoleAndLabel('password', 'password').focus().type('123456')
+
+    cy.intercept('POST', /login/i, {
+      statusCode: 200,
+      delay: 300,
+      body: {
+        accessToken: faker.datatype.uuid()
+      }
+    })
 
     cy.get('button[type=submit]').click()
     cy.getByLabel('request-feedback').getByLabel('spinner').should('exist')
