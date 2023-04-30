@@ -31,4 +31,21 @@ describe('Login', () => {
       .should('have.attr', 'title', 'Campo inválido')
       .should('have.class', 'error')
   })
+
+  it('Should present valid state if form is valid', () => {
+    cy.getByRoleAndLabel('email').type(faker.internet.email())
+    cy.getByLabel('status-email')
+      .should('have.attr', 'title', 'Tudo certo!')
+      .should('have.class', 'success')
+
+    cy.getByRoleAndLabel('password', 'password').type(
+      faker.random.alphaNumeric(6)
+    )
+    cy.getByLabel('status-password')
+      .should('have.attr', 'title', 'Tudo certo!')
+      .should('have.class', 'success')
+
+    cy.get('button[type=submit]').should('not.have.attr', 'disabled')
+    cy.getByLabel('request-feedback').should('not.have.descendants')
+  })
 })
