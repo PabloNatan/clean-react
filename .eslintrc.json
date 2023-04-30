@@ -33,6 +33,7 @@
     "import/export": "off",
     "react/prop-types": "off",
     "react/jsx-uses-react": "error",
-    "react/jsx-uses-vars": "error"
+    "react/jsx-uses-vars": "error",
+    "cypress/unsafe-to-chain-command": "off"
   }
 }
