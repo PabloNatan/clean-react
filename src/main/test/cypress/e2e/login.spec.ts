@@ -58,19 +58,40 @@ describe('Login', () => {
       .focus()
       .type(faker.random.alphaNumeric(6))
 
+    cy.intercept('POST', '/auth/login', {
+      statusCode: 401,
+      delay: 500
+    })
+
     cy.get('button[type=submit]').click()
+
+    cy.getByLabel('request-feedback').getByLabel('spinner').should('exist')
     cy.getByLabel('request-feedback')
-      .getByLabel('spinner')
-      .should('exist')
       .getByLabel('error-message')
       .should('not.exist')
-      .getByLabel('spinner')
-      .should('not.exist')
+    cy.getByLabel('request-feedback').getByLabel('spinner').should('not.exist')
+    cy.getByLabel('request-feedback')
       .getByLabel('error-message')
       .should('exist')
+    cy.getByLabel('request-feedback')
       .getByLabel('error-message')
       .should('contain.text', 'Credenciais inválidas')
-
     cy.url().should('eq', `${baseUrl}/login`)
+  })
+
+  it('Should present save accessToken if valid credentials are provided', () => {
+    cy.getByRoleAndLabel('email').focus().type('pablo@email.com')
+    cy.getByRoleAndLabel('password', 'password').focus().type('123456')
+
+    cy.get('button[type=submit]').click()
+    cy.getByLabel('request-feedback').getByLabel('spinner').should('exist')
+    cy.getByLabel('request-feedback')
+      .getByLabel('error-message')
+      .should('not.exist')
+    cy.getByLabel('request-feedback').getByLabel('spinner').should('not.exist')
+    cy.url().should('eq', `${baseUrl}/`)
+    cy.window().then((window) =>
+      assert.isOk(window.localStorage.getItem('accessToken'))
+    )
   })
 })
