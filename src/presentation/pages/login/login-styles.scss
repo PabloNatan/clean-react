@@ -29,6 +29,12 @@
       margin-top: 32px;
     }
 
+    [role='button']:disabled {
+      background-color: red !important;
+      color: red;
+      margin-top: 600px;
+    }
+
     .signUpLink {
       display: inline;
       align-self: center;

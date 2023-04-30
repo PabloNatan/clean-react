@@ -9,7 +9,7 @@ export default defineConfig({
 
   e2e: {
     specPattern: 'src/main/test/cypress/**/**/*.spec.{js,jsx,ts,tsx}',
-    supportFile: false,
+    supportFile: 'src/main/test/cypress/support',
     fileServerFolder: 'src/main/test/cypress',
     baseUrl: 'http://localhost:8080'
   }
