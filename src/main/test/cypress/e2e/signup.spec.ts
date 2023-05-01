@@ -2,12 +2,16 @@ import { faker } from '@faker-js/faker'
 import * as FormHelper from '../utils/form-helper'
 import * as Http from './signup-mocks'
 
-const simulateValidSubmit = (): void => {
+export const populateFields = (): void => {
   cy.typeByLabel('name', faker.name.fullName())
   cy.typeByLabel('email', faker.internet.email())
   const password = faker.internet.password()
   cy.typeByLabel('password', password)
   cy.typeByLabel('passwordConfirmation', password)
+}
+
+const simulateValidSubmit = (): void => {
+  populateFields()
   cy.get('button[type=submit]').click()
   cy.getByLabel('spinner').should('exist')
   cy.getByLabel('request-feedback').should('not.have.descendants')
@@ -82,5 +86,12 @@ describe('SignUp', () => {
     simulateValidSubmit()
     FormHelper.testUrl('/')
     FormHelper.testLocalStorageITem('accessToken')
+  })
+
+  it('Should prevent multiple submits', () => {
+    Http.mockCreated()
+    populateFields()
+    cy.get('button[type=submit]').dblclick()
+    FormHelper.testHttpCallsCount(1)
   })
 })
