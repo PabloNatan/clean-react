@@ -8,6 +8,7 @@ export const Spinner: React.FC<Props> = (props: Props) => {
     <div
       {...props}
       className={[Styles.spinner, props?.className || ''].join(' ')}
+      aria-label="spinner"
     >
       <div />
       <div />
