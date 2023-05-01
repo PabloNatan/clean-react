@@ -3,13 +3,13 @@ import Styles from './spinner.styles.scss'
 
 type Props = React.HTMLAttributes<HTMLElement>
 
-export const Spinner: React.FC<Props> = (props: Props) => {
+export const Spinner: React.FC<Props> = ({ className, ...rest }: Props) => {
+  const spinnerClassName = [Styles.spinner]
+  if (className) {
+    spinnerClassName.push(className)
+  }
   return (
-    <div
-      {...props}
-      className={[Styles.spinner, props?.className || ''].join(' ')}
-      aria-label="spinner"
-    >
+    <div {...rest} className={spinnerClassName.join(' ')} aria-label="spinner">
       <div />
       <div />
       <div />
