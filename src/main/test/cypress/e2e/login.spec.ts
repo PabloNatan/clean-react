@@ -133,4 +133,16 @@ describe('Login', () => {
     cy.get('button[type=submit]').dblclick()
     cy.get('@request.all').should('have.length', 1)
   })
+
+  it.only('Should not call submit if form is invalid', () => {
+    cy.intercept('POST', /login/i, {
+      statusCode: 200,
+      delay: requestDelay,
+      body: {
+        accessToken: faker.datatype.uuid()
+      }
+    }).as('request')
+    cy.typeByLabel('email', faker.internet.email()).type('{enter}')
+    cy.get('@request.all').should('have.length', 0)
+  })
 })
