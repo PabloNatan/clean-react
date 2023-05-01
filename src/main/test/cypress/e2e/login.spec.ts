@@ -12,60 +12,45 @@ describe('Login', () => {
     cy.getByLabel('status-email')
       .should('have.attr', 'title', 'Campo obrigatório')
       .should('have.class', 'error')
-
     cy.getByLabel('status-password')
       .should('have.attr', 'title', 'Campo obrigatório')
       .should('have.class', 'error')
-
     cy.get('button[type=submit]').should('have.attr', 'disabled')
-
     cy.getByLabel('request-feedback').should('not.have.descendants')
   })
 
   it('Should present error state if form is invalid', () => {
-    cy.getByRoleAndLabel('email').type(faker.random.word())
+    cy.typeByLabel('email', faker.random.words())
     cy.getByLabel('status-email')
       .should('have.attr', 'title', 'Campo inválido')
       .should('have.class', 'error')
-
-    cy.getByRoleAndLabel('password', 'password').type(
-      faker.random.alphaNumeric(3)
-    )
+    cy.typeByLabel('password', faker.random.alphaNumeric(3))
     cy.getByLabel('status-password')
       .should('have.attr', 'title', 'Campo inválido')
       .should('have.class', 'error')
   })
 
   it('Should present valid state if form is valid', () => {
-    cy.getByRoleAndLabel('email').type(faker.internet.email())
+    cy.typeByLabel('email', faker.internet.email())
     cy.getByLabel('status-email')
       .should('have.attr', 'title', 'Tudo certo!')
       .should('have.class', 'success')
-
-    cy.getByRoleAndLabel('password', 'password').type(
-      faker.random.alphaNumeric(6)
-    )
+    cy.typeByLabel('password', faker.random.alphaNumeric(5))
     cy.getByLabel('status-password')
       .should('have.attr', 'title', 'Tudo certo!')
       .should('have.class', 'success')
-
     cy.get('button[type=submit]').should('not.have.attr', 'disabled')
     cy.getByLabel('request-feedback').should('not.have.descendants')
   })
 
   it('Should present InvalidCredentialsError on 401', () => {
-    cy.getByRoleAndLabel('email').focus().type(faker.internet.email())
-    cy.getByRoleAndLabel('password', 'password')
-      .focus()
-      .type(faker.random.alphaNumeric(6))
-
     cy.intercept('POST', /login/i, {
       statusCode: 401,
       delay: requestDelay
     })
-
+    cy.typeByLabel('email', faker.internet.email())
+    cy.typeByLabel('password', faker.random.alphaNumeric(5))
     cy.get('button[type=submit]').click()
-
     cy.getByLabel('spinner').should('exist')
     cy.getByLabel('error-message').should('not.exist')
     cy.getByLabel('spinner').should('not.exist')
@@ -78,18 +63,13 @@ describe('Login', () => {
   })
 
   it('Should present Unexpected Error on 400', () => {
-    cy.getByRoleAndLabel('email').focus().type(faker.internet.email())
-    cy.getByRoleAndLabel('password', 'password')
-      .focus()
-      .type(faker.random.alphaNumeric(6))
-
     cy.intercept('POST', /login/i, {
       statusCode: 400,
       delay: requestDelay
     })
-
+    cy.typeByLabel('email', faker.internet.email())
+    cy.typeByLabel('password', faker.random.alphaNumeric(5))
     cy.get('button[type=submit]').click()
-
     cy.getByLabel('spinner').should('exist')
     cy.getByLabel('error-message').should('not.exist')
     cy.getByLabel('spinner').should('not.exist')
@@ -102,17 +82,14 @@ describe('Login', () => {
   })
 
   it('Should present UnexpectedError if invalid data is return', () => {
-    cy.getByRoleAndLabel('email').focus().type('pablo@email.com')
-    cy.getByRoleAndLabel('password', 'password').focus().type('123456')
-
     cy.intercept('POST', /login/i, {
       statusCode: 200,
       delay: requestDelay,
       body: {}
     })
-
+    cy.typeByLabel('email', faker.internet.email())
+    cy.typeByLabel('password', faker.random.alphaNumeric(5))
     cy.get('button[type=submit]').click()
-
     cy.getByLabel('spinner').should('exist')
     cy.getByLabel('error-message').should('not.exist')
     cy.getByLabel('spinner').should('not.exist')
@@ -125,11 +102,6 @@ describe('Login', () => {
   })
 
   it('Should present save accessToken if valid credentials are provided', () => {
-    cy.getByRoleAndLabel('email').focus().type(faker.internet.email())
-    cy.getByRoleAndLabel('password', 'password')
-      .focus()
-      .type(faker.random.alphaNumeric(6))
-
     cy.intercept('POST', /login/i, {
       statusCode: 200,
       delay: requestDelay,
@@ -137,7 +109,8 @@ describe('Login', () => {
         accessToken: faker.datatype.uuid()
       }
     })
-
+    cy.typeByLabel('email', faker.internet.email())
+    cy.typeByLabel('password', faker.random.alphaNumeric(5))
     cy.get('button[type=submit]').click()
     cy.getByLabel('spinner').should('exist')
     cy.getByLabel('error-message').should('not.exist')
@@ -146,5 +119,19 @@ describe('Login', () => {
     cy.window().then((window) =>
       assert.isOk(window.localStorage.getItem('accessToken'))
     )
+  })
+
+  it('Should present multiple submits', () => {
+    cy.intercept('POST', /login/i, {
+      statusCode: 200,
+      delay: requestDelay,
+      body: {
+        accessToken: faker.datatype.uuid()
+      }
+    }).as('request')
+    cy.typeByLabel('email', faker.internet.email())
+    cy.typeByLabel('password', faker.random.alphaNumeric(5))
+    cy.get('button[type=submit]').dblclick()
+    cy.get('@request.all').should('have.length', 1)
   })
 })
