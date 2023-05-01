@@ -110,8 +110,7 @@ describe('Login', () => {
       }
     })
     cy.typeByLabel('email', faker.internet.email())
-    cy.typeByLabel('password', faker.random.alphaNumeric(5))
-    cy.get('button[type=submit]').click()
+    cy.typeByLabel('password', faker.random.alphaNumeric(5)).type('{enter}')
     cy.getByLabel('spinner').should('exist')
     cy.getByLabel('error-message').should('not.exist')
     cy.getByLabel('spinner').should('not.exist')
