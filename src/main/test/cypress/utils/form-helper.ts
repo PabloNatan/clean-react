@@ -12,6 +12,7 @@ export const testInputStatus = (field: string, error?: string): void => {
 export const testMainError = (error: string): void => {
   cy.getByLabel('error-message').should('exist')
   cy.getByLabel('error-message').should('contain.text', error)
+  cy.getByLabel('spinner').should('not.exist')
 }
 
 export const testHttpCallsCount = (count: number): void => {

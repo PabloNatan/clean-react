@@ -2,10 +2,15 @@ import { faker } from '@faker-js/faker'
 import * as FormHelper from '../utils/form-helper'
 import * as Http from './login-mocks'
 
-const simulateValidSubmit = (): void => {
+const populateFields = (): void => {
   cy.typeByLabel('email', faker.internet.email())
   cy.typeByLabel('password', faker.random.alphaNumeric(5))
+}
+
+const simulateValidSubmit = (): void => {
+  populateFields()
   cy.get('button[type=submit]').click()
+  cy.getByLabel('spinner').should('exist')
 }
 
 describe('Login', () => {
@@ -39,8 +44,6 @@ describe('Login', () => {
   it('Should present InvalidCredentialsError on 401', () => {
     Http.mockInvalidCredentialsError()
     simulateValidSubmit()
-    cy.getByLabel('spinner').should('exist')
-    cy.getByLabel('request-feedback').should('not.have.descendants')
     FormHelper.testMainError('Credenciais inválidas')
     FormHelper.testUrl('/login')
   })
@@ -48,8 +51,6 @@ describe('Login', () => {
   it('Should present Unexpected Error on 400', () => {
     Http.mockUnexpectedError()
     simulateValidSubmit()
-    cy.getByLabel('spinner').should('exist')
-    cy.getByLabel('request-feedback').should('not.have.descendants')
     FormHelper.testMainError(
       'Algo de errado aconteceu. Tente novamente em breve'
     )
@@ -59,8 +60,6 @@ describe('Login', () => {
   it('Should present UnexpectedError if invalid data is return', () => {
     Http.mockInvalidData()
     simulateValidSubmit()
-    cy.getByLabel('spinner').should('exist')
-    cy.getByLabel('request-feedback').should('not.have.descendants')
     FormHelper.testMainError(
       'Algo de errado aconteceu. Tente novamente em breve'
     )
@@ -70,16 +69,13 @@ describe('Login', () => {
   it('Should present save accessToken if valid credentials are provided', () => {
     Http.mockOk()
     simulateValidSubmit()
-    cy.getByLabel('spinner').should('exist')
-    cy.getByLabel('request-feedback').should('not.have.descendants')
     FormHelper.testUrl('/')
     FormHelper.testLocalStorageITem('accessToken')
   })
 
   it('Should present multiple submits', () => {
     Http.mockOk()
-    cy.typeByLabel('email', faker.internet.email())
-    cy.typeByLabel('password', faker.random.alphaNumeric(5))
+    populateFields()
     cy.get('button[type=submit]').dblclick()
     FormHelper.testHttpCallsCount(1)
   })

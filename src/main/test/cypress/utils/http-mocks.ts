@@ -1,7 +1,7 @@
 import { faker } from '@faker-js/faker'
 import { type Method } from 'cypress/types/net-stubbing'
 
-const delay = 50
+const delay = 300
 
 export const mockInvalidCredentialsError = (url: RegExp): void => {
   cy.intercept('POST', url, {
