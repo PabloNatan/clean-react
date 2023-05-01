@@ -9,6 +9,8 @@ const simulateValidSubmit = (): void => {
   cy.typeByLabel('password', password)
   cy.typeByLabel('passwordConfirmation', password)
   cy.get('button[type=submit]').click()
+  cy.getByLabel('spinner').should('exist')
+  cy.getByLabel('request-feedback').should('not.have.descendants')
 }
 
 describe('SignUp', () => {
@@ -53,9 +55,16 @@ describe('SignUp', () => {
   it('Should present InvalidCredentialsError on 403', () => {
     Http.mockEmailInUseError()
     simulateValidSubmit()
-    cy.getByLabel('spinner').should('exist')
-    cy.getByLabel('request-feedback').should('not.have.descendants')
     FormHelper.testMainError('Este e-mail já está em uso')
+    FormHelper.testUrl('/signup')
+  })
+
+  it('Should present Unexpected Error on 400', () => {
+    Http.mockUnexpectedError()
+    simulateValidSubmit()
+    FormHelper.testMainError(
+      'Algo de errado aconteceu. Tente novamente em breve'
+    )
     FormHelper.testUrl('/signup')
   })
 })
