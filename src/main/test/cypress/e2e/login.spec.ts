@@ -125,8 +125,10 @@ describe('Login', () => {
   })
 
   it('Should present save accessToken if valid credentials are provided', () => {
-    cy.getByRoleAndLabel('email').focus().type('pablo@email.com')
-    cy.getByRoleAndLabel('password', 'password').focus().type('123456')
+    cy.getByRoleAndLabel('email').focus().type(faker.internet.email())
+    cy.getByRoleAndLabel('password', 'password')
+      .focus()
+      .type(faker.random.alphaNumeric(6))
 
     cy.intercept('POST', /login/i, {
       statusCode: 200,
