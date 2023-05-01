@@ -40,3 +40,15 @@ export const mockOk = (url: RegExp, method: Method, body: object): void => {
     body
   }).as('request')
 }
+
+export const mockCreated = (
+  url: RegExp,
+  method: Method,
+  body: object
+): void => {
+  cy.intercept(method, url, {
+    statusCode: 201,
+    delay,
+    body
+  }).as('request')
+}

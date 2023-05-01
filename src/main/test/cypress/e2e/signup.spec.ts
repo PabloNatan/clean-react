@@ -76,4 +76,11 @@ describe('SignUp', () => {
     )
     FormHelper.testUrl('/signup')
   })
+
+  it('Should save accessToken if valid credentials are provided', () => {
+    Http.mockCreated()
+    simulateValidSubmit()
+    FormHelper.testUrl('/')
+    FormHelper.testLocalStorageITem('accessToken')
+  })
 })

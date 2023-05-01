@@ -13,8 +13,8 @@ export const mockUnexpectedError = (): void => {
   Helper.mockUnexpectedError(/signup/i, 'POST')
 }
 
-export const mockOk = (): void => {
-  Helper.mockOk(/signup/i, 'POST', { accessToken: faker.datatype.uuid() })
+export const mockCreated = (): void => {
+  Helper.mockCreated(/signup/i, 'POST', { accessToken: faker.datatype.uuid() })
 }
 
 export const mockInvalidData = (): void => {
