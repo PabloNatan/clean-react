@@ -4,13 +4,17 @@ import user from '@testing-library/user-event'
 
 export const testStatusForField = (
   field: string,
-  validationError?: string
+  validationError = ''
 ): void => {
-  const status = screen.getByRole('status', {
-    name: new RegExp(`status-${field}$`)
-  })
-  expect(status).toHaveClass(validationError ? 'error' : 'success')
-  expect(status.title).toBe(validationError || 'Tudo certo!')
+  const inputWrap = screen.getByLabelText(new RegExp(`${field}-wrap$`))
+  const input = screen.getByLabelText(new RegExp(`${field}$`))
+  const inputLabel = screen.getByLabelText(new RegExp(`${field}-label$`))
+  expect(inputWrap).toHaveAttribute(
+    'data-status',
+    validationError ? 'invalid' : 'valid'
+  )
+  expect(input.title).toBe(validationError)
+  expect(inputLabel.title).toBe(validationError)
 }
 
 export const testButtonIsDisabled = (): void => {

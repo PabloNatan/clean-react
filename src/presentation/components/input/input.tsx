@@ -16,22 +16,27 @@ export const Input: React.FC<Props> = (props) => {
   }
 
   return (
-    <div className={Styles.inputWrapper}>
+    <div
+      className={Styles.inputWrapper}
+      data-status={error ? 'invalid' : 'valid'}
+      aria-label={`${props.name}-wrap`}
+    >
       <input
         {...props}
+        title={error}
         placeholder=" "
         autoComplete="off"
         aria-label={props.name}
         onChange={handleChange}
         id={props.name}
       />
-      <label htmlFor={props.name}>{props.placeholder}</label>
-      <div
-        title={error || 'Tudo certo!'}
-        className={[Styles.inputIcon, error ? 'error' : 'success'].join(' ')}
-        aria-label={`status-${props.name}`}
-        role="status"
-      />
+      <label
+        title={error}
+        htmlFor={props.name}
+        aria-label={`${props.name}-label`}
+      >
+        {props.placeholder}
+      </label>
     </div>
   )
 }

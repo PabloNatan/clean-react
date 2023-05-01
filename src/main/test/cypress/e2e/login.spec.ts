@@ -9,36 +9,52 @@ describe('Login', () => {
   })
 
   it('Should load with correct initial state', () => {
-    cy.getByLabel('status-email')
+    cy.getByLabel('email')
       .should('have.attr', 'title', 'Campo obrigatório')
-      .should('have.class', 'error')
-    cy.getByLabel('status-password')
+      .siblings('label')
       .should('have.attr', 'title', 'Campo obrigatório')
-      .should('have.class', 'error')
+      .parent()
+      .should('have.attr', 'data-status', 'invalid')
+    cy.getByLabel('password')
+      .should('have.attr', 'title', 'Campo obrigatório')
+      .siblings('label')
+      .should('have.attr', 'title', 'Campo obrigatório')
+      .parent()
+      .should('have.attr', 'data-status', 'invalid')
     cy.get('button[type=submit]').should('have.attr', 'disabled')
     cy.getByLabel('request-feedback').should('not.have.descendants')
   })
 
   it('Should present error state if form is invalid', () => {
     cy.typeByLabel('email', faker.random.words())
-    cy.getByLabel('status-email')
       .should('have.attr', 'title', 'Campo inválido')
-      .should('have.class', 'error')
+      .siblings('label')
+      .should('have.attr', 'title', 'Campo inválido')
+      .parent()
+      .should('have.attr', 'data-status', 'invalid')
     cy.typeByLabel('password', faker.random.alphaNumeric(3))
-    cy.getByLabel('status-password')
       .should('have.attr', 'title', 'Campo inválido')
-      .should('have.class', 'error')
+      .siblings('label')
+      .should('have.attr', 'title', 'Campo inválido')
+      .parent()
+      .should('have.attr', 'data-status', 'invalid')
   })
 
   it('Should present valid state if form is valid', () => {
-    cy.typeByLabel('email', faker.internet.email())
-    cy.getByLabel('status-email')
-      .should('have.attr', 'title', 'Tudo certo!')
-      .should('have.class', 'success')
-    cy.typeByLabel('password', faker.random.alphaNumeric(5))
-    cy.getByLabel('status-password')
-      .should('have.attr', 'title', 'Tudo certo!')
-      .should('have.class', 'success')
+    cy.typeByLabel('email', faker.internet.email()).should(
+      'not.have.attr',
+      'title'
+    )
+    cy.getByLabel('email-label').should('not.have.attr', 'title')
+    cy.getByLabel('email').parent().should('have.attr', 'data-status', 'valid')
+    cy.typeByLabel('password', faker.random.alphaNumeric(5)).should(
+      'not.have.attr',
+      'title'
+    )
+    cy.getByLabel('password-label').should('not.have.attr', 'title')
+    cy.getByLabel('password')
+      .parent()
+      .should('have.attr', 'data-status', 'valid')
     cy.get('button[type=submit]').should('not.have.attr', 'disabled')
     cy.getByLabel('request-feedback').should('not.have.descendants')
   })
@@ -134,7 +150,7 @@ describe('Login', () => {
     cy.get('@request.all').should('have.length', 1)
   })
 
-  it.only('Should not call submit if form is invalid', () => {
+  it('Should not call submit if form is invalid', () => {
     cy.intercept('POST', /login/i, {
       statusCode: 200,
       delay: requestDelay,
