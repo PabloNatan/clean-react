@@ -25,4 +25,18 @@ describe('SignUp', () => {
     cy.typeByLabel('passwordConfirmation', faker.random.alphaNumeric(4))
     FormHelper.testInputStatus('passwordConfirmation', 'Campo inválido')
   })
+
+  it('Should present valid state if form is valid', () => {
+    cy.typeByLabel('name', faker.name.fullName())
+    FormHelper.testInputStatus('name')
+    cy.typeByLabel('email', faker.internet.email())
+    FormHelper.testInputStatus('email')
+    const password = faker.internet.password()
+    cy.typeByLabel('password', password)
+    FormHelper.testInputStatus('password')
+    cy.typeByLabel('passwordConfirmation', password)
+    FormHelper.testInputStatus('password')
+    cy.get('button[type=submit]').should('not.have.attr', 'disabled')
+    cy.getByLabel('request-feedback').should('not.have.descendants')
+  })
 })
