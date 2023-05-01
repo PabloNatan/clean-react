@@ -1,5 +1,15 @@
 import { faker } from '@faker-js/faker'
 import * as FormHelper from '../utils/form-helper'
+import * as Http from './signup-mocks'
+
+const simulateValidSubmit = (): void => {
+  cy.typeByLabel('name', faker.name.fullName())
+  cy.typeByLabel('email', faker.internet.email())
+  const password = faker.internet.password()
+  cy.typeByLabel('password', password)
+  cy.typeByLabel('passwordConfirmation', password)
+  cy.get('button[type=submit]').click()
+}
 
 describe('SignUp', () => {
   beforeEach(() => {
@@ -38,5 +48,14 @@ describe('SignUp', () => {
     FormHelper.testInputStatus('password')
     cy.get('button[type=submit]').should('not.have.attr', 'disabled')
     cy.getByLabel('request-feedback').should('not.have.descendants')
+  })
+
+  it('Should present InvalidCredentialsError on 403', () => {
+    Http.mockEmailInUseError()
+    simulateValidSubmit()
+    cy.getByLabel('spinner').should('exist')
+    cy.getByLabel('request-feedback').should('not.have.descendants')
+    FormHelper.testMainError('Este e-mail já está em uso')
+    FormHelper.testUrl('/signup')
   })
 })
