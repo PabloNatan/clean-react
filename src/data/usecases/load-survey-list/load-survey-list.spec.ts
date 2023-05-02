@@ -55,12 +55,20 @@ describe('RemoteLoadSurveyLIst', () => {
   it('Should return a list of SurveyModels if HttpGetClient returns 200', async () => {
     const { sut, httpGetClientSpy } = makeSut()
     const httpResult = mockSurveyList()
-    console.log(httpResult)
     httpGetClientSpy.response = {
       statusCode: HttpStatusCode.ok,
       body: httpResult
     }
     const surveyList = await sut.loadAll()
     expect(surveyList).toEqual(httpResult)
+  })
+
+  it('Should return an empty list if HttpGetClient return 204', async () => {
+    const { sut, httpGetClientSpy } = makeSut()
+    httpGetClientSpy.response = {
+      statusCode: HttpStatusCode.noContent
+    }
+    const surveyList = await sut.loadAll()
+    expect(surveyList).toEqual([])
   })
 })
