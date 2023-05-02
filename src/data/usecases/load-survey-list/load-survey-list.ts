@@ -1,4 +1,5 @@
-import { type HttpGetClient } from '@/data/protocols/http'
+import { HttpStatusCode, type HttpGetClient } from '@/data/protocols/http'
+import { UnexpectedError } from '@/domain/errors'
 import { type SurveyModel } from '@/domain/models'
 
 export class RemoteLoadSurveyList {
@@ -8,6 +9,12 @@ export class RemoteLoadSurveyList {
   ) {}
 
   async loadAll(): Promise<void> {
-    this.httpGetClient.get({ url: this.url })
+    const httpResponse = await this.httpGetClient.get({ url: this.url })
+    switch (httpResponse.statusCode) {
+      case HttpStatusCode.ok:
+        break
+      default:
+        throw new UnexpectedError()
+    }
   }
 }
