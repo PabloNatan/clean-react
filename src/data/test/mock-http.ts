@@ -3,7 +3,9 @@ import {
   type HttpResponse,
   type HttpPostParams,
   HttpStatusCode,
-  type HttpPostClient
+  type HttpPostClient,
+  type HttpGetClient,
+  type HttpGetParams
 } from '../protocols/http'
 import { randomObject } from '@/test'
 
@@ -26,6 +28,20 @@ export class HttpPostClientSpy<BodyType, ResponseType>
   ): Promise<HttpResponse<ResponseType>> {
     this.url = params.url
     this.body = params.body
+    return Promise.resolve(this.response)
+  }
+}
+
+export class HttpGetClientSpy<ResponseType>
+  implements HttpGetClient<ResponseType>
+{
+  url: string
+  response: HttpResponse<ResponseType> = {
+    statusCode: HttpStatusCode.ok
+  }
+
+  async get(params: HttpGetParams): Promise<HttpResponse<ResponseType>> {
+    this.url = params.url
     return Promise.resolve(this.response)
   }
 }
