@@ -1,11 +1,11 @@
 import React from 'react'
 import { createBrowserRouter } from 'react-router-dom'
 
-import { makeLogin } from '../factories/pages/login/login-factory'
-import { makeSignUp } from '../factories/pages/signup/signup-factory'
+import { makeLogin, makeSignUp } from '../factories/pages'
+import { SurveyList } from '@/presentation/pages'
 
 export const router = createBrowserRouter([
-  { path: '/', element: <></> },
+  { path: '/', element: <SurveyList /> },
   { path: '/login', element: makeLogin({}) },
   { path: '/signup', element: makeSignUp({}) }
 ])
