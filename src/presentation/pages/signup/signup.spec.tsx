@@ -1,22 +1,19 @@
-import React from 'react'
 import { faker } from '@faker-js/faker'
-import user from '@testing-library/user-event'
 import {
-  type ByRoleMatcher,
   cleanup,
   render,
-  type RenderResult,
-  screen
+  screen,
+  type ByRoleMatcher,
+  type RenderResult
 } from '@testing-library/react'
+import user from '@testing-library/user-event'
+import React from 'react'
 
-import { SignUp } from '@/presentation/pages'
-import {
-  AddAccountSpy,
-  Helper,
-  UpdateCurrentAccountMock,
-  ValidationStub
-} from '@/presentation/test'
 import { EmailInUseError } from '@/domain/errors'
+import { type AccountModel } from '@/domain/models'
+import { ApiContext } from '@/presentation/contexts'
+import { SignUp } from '@/presentation/pages'
+import { AddAccountSpy, Helper, ValidationStub } from '@/presentation/test'
 import { RouterProvider, createMemoryRouter } from 'react-router-dom'
 
 const signUpFields = {
@@ -31,7 +28,7 @@ type SutTypes = {
   history: ReturnType<typeof createMemoryRouter>
   validationSpy: ValidationStub
   addAccountSpy: AddAccountSpy
-  updateCurrentAccountMock: UpdateCurrentAccountMock
+  setCurrentAccountMock: (account: AccountModel) => void
 }
 
 type SutParams = {
@@ -42,13 +39,10 @@ const makeSut = (params?: SutParams): SutTypes => {
   const validationSpy = new ValidationStub()
   validationSpy.errorMessage = params?.validationError
   const addAccountSpy = new AddAccountSpy()
-  const updateCurrentAccountMock = new UpdateCurrentAccountMock()
+  const setCurrentAccountMock = jest.fn()
+
   const element = (
-    <SignUp
-      validation={validationSpy}
-      addAccount={addAccountSpy}
-      updateCurrentAccount={updateCurrentAccountMock}
-    />
+    <SignUp validation={validationSpy} addAccount={addAccountSpy} />
   )
   const history = createMemoryRouter(
     [
@@ -68,12 +62,16 @@ const makeSut = (params?: SutParams): SutTypes => {
     }
   )
 
-  const sut = render(<RouterProvider router={history} />)
+  const sut = render(
+    <ApiContext.Provider value={{ setCurrentAccount: setCurrentAccountMock }}>
+      <RouterProvider router={history} />
+    </ApiContext.Provider>
+  )
   return {
     sut,
     validationSpy,
     addAccountSpy,
-    updateCurrentAccountMock,
+    setCurrentAccountMock,
     history
   }
 }
@@ -221,9 +219,9 @@ describe('Login Component', () => {
   })
 
   test('Should call UpdateCurrentAccount on success', async () => {
-    const { addAccountSpy, history, updateCurrentAccountMock } = makeSut()
+    const { addAccountSpy, history, setCurrentAccountMock } = makeSut()
     await simulateValidSubmitAsync()
-    expect(updateCurrentAccountMock.account).toEqual(addAccountSpy.account)
+    expect(setCurrentAccountMock).toHaveBeenCalledWith(addAccountSpy.account)
     expect(history.state.location.pathname).toBe('/')
   })
 

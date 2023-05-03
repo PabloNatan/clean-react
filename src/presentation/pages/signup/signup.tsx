@@ -1,3 +1,4 @@
+import { type AddAccount } from '@/domain/usecases'
 import {
   Footer,
   FormStatus,
@@ -6,23 +7,19 @@ import {
   SubmitButton
 } from '@/presentation/components'
 import { FormContext } from '@/presentation/contexts/form/form-context'
-import React, { useEffect, useState } from 'react'
-import Styles from './signup-styles.scss'
 import { type Validation } from '@/presentation/protocols/validation'
-import { type UpdateCurrentAccount, type AddAccount } from '@/domain/usecases'
+import React, { useEffect, useState } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
+import Styles from './signup-styles.scss'
+import { useApiContext } from '@/presentation/contexts'
 
 type Props = {
   validation: Validation
   addAccount: AddAccount
-  updateCurrentAccount: UpdateCurrentAccount
 }
 
-export const SignUp: React.FC<Props> = ({
-  validation,
-  addAccount,
-  updateCurrentAccount
-}: Props) => {
+export const SignUp: React.FC<Props> = ({ validation, addAccount }: Props) => {
+  const apiContext = useApiContext()
   const navigate = useNavigate()
   const [state, setState] = useState({
     email: '',
@@ -83,7 +80,7 @@ export const SignUp: React.FC<Props> = ({
         password: state.password,
         passwordConfirmation: state.passwordConfirmation
       })
-      updateCurrentAccount.save(account)
+      apiContext.setCurrentAccount(account)
       navigate('/')
     } catch (error) {
       setState((oldState) => ({

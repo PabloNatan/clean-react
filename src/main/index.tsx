@@ -1,11 +1,14 @@
+import '@/presentation/styles/global.scss'
 import React from 'react'
 import ReactDom from 'react-dom'
 import { RouterProvider } from 'react-router-dom'
-import '@/presentation/styles/global.scss'
 
+import { ApiContextProvider } from '@/presentation/contexts'
 import { router } from './router'
 
 ReactDom.render(
-  <RouterProvider router={router} />,
+  <ApiContextProvider>
+    <RouterProvider router={router} />
+  </ApiContextProvider>,
   document.getElementById('main')
 )

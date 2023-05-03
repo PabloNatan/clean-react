@@ -1,7 +1,4 @@
-import {
-  type UpdateCurrentAccount,
-  type Authentication
-} from '@/domain/usecases'
+import { type Authentication } from '@/domain/usecases'
 import {
   Footer,
   FormStatus,
@@ -9,6 +6,7 @@ import {
   LoginHeader,
   SubmitButton
 } from '@/presentation/components'
+import { useApiContext } from '@/presentation/contexts'
 import { FormContext } from '@/presentation/contexts/form/form-context'
 import { type Validation } from '@/presentation/protocols/validation'
 import React, { useEffect, useState } from 'react'
@@ -18,14 +16,13 @@ import Styles from './login-styles.scss'
 type Props = {
   validation: Validation
   authentication: Authentication
-  updateCurrenctAccount: UpdateCurrentAccount
 }
 
 export const Login: React.FC<Props> = ({
   validation,
-  authentication,
-  updateCurrenctAccount
+  authentication
 }: Props) => {
+  const apiContext = useApiContext()
   const navigate = useNavigate()
   const [state, setState] = useState({
     isLoading: false,
@@ -65,7 +62,7 @@ export const Login: React.FC<Props> = ({
         email: state.email,
         password: state.password
       })
-      updateCurrenctAccount.save(acccount)
+      apiContext.setCurrentAccount(acccount)
       navigate('/')
     } catch (error) {
       setState((oldState) => ({
