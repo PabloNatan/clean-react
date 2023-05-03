@@ -1,16 +1,17 @@
 import { SetStorageMock } from '@/data/test'
-import { faker } from '@faker-js/faker'
-import { LocalSaveAccessToken } from './local-save-access-token'
 import { UnexpectedError } from '@/domain/errors'
+import { type AccountModel } from '@/domain/models'
+import { mockAccountModel } from '@/domain/test'
+import { LocalUpdateCurrentAccount } from './local-update-current-account'
 
 type SutTypes = {
-  sut: LocalSaveAccessToken
+  sut: LocalUpdateCurrentAccount
   setStorageMock: SetStorageMock
 }
 
 const makeSut = (): SutTypes => {
   const setStorageMock = new SetStorageMock()
-  const sut = new LocalSaveAccessToken(setStorageMock)
+  const sut = new LocalUpdateCurrentAccount(setStorageMock)
 
   return {
     sut,
@@ -18,13 +19,13 @@ const makeSut = (): SutTypes => {
   }
 }
 
-describe('LocalSaveAccessToken', () => {
+describe('LocalUpdateCurrentAccount', () => {
   test('Should call SetStorage with correct value', async () => {
     const { sut, setStorageMock } = makeSut()
-    const accessToken = faker.datatype.uuid()
-    await sut.save(accessToken)
-    expect(setStorageMock.key).toBe('accessToken')
-    expect(setStorageMock.value).toBe(accessToken)
+    const account: AccountModel = mockAccountModel()
+    await sut.save(account)
+    expect(setStorageMock.key).toBe('account')
+    expect(setStorageMock.value).toBe(JSON.stringify(account))
   })
 
   test('Should throw if SetStorage throws', async () => {
@@ -32,13 +33,13 @@ describe('LocalSaveAccessToken', () => {
     const error = new Error('Invalid Storage')
     try {
       jest.spyOn(setStorageMock, 'value').mockRejectedValue(error)
-      await sut.save(faker.datatype.uuid())
+      await sut.save(mockAccountModel())
     } catch (receivedError) {
       expect(receivedError).toEqual(error)
     }
   })
 
-  test('Should throw if accessToken is falsy', async () => {
+  test('Should throw if account is falsy', async () => {
     const { sut } = makeSut()
     const promise = sut.save(undefined)
     await expect(promise).rejects.toThrow(new UnexpectedError())

@@ -1,4 +1,4 @@
-import { makeLocalSaveAccessToken } from '@/main/factories/usecases'
+import { makeLocalUpdateCurrentAccount } from '@/main/factories/usecases'
 import { SignUp } from '@/presentation/pages'
 import React, { type ReactNode } from 'react'
 import { makeRemoteAddAccount } from '../../usecases/addAccount/add-account-factory'
@@ -13,7 +13,7 @@ export const makeSignUp: React.FC<Props> = () => {
     <SignUp
       addAccount={makeRemoteAddAccount()}
       validation={makeSignUpValidation()}
-      saveAccessToken={makeLocalSaveAccessToken()}
+      updateCurrentAccount={makeLocalUpdateCurrentAccount()}
     />
   )
 }

@@ -9,19 +9,19 @@ import { FormContext } from '@/presentation/contexts/form/form-context'
 import React, { useEffect, useState } from 'react'
 import Styles from './signup-styles.scss'
 import { type Validation } from '@/presentation/protocols/validation'
-import { type SaveAccessToken, type AddAccount } from '@/domain/usecases'
+import { type UpdateCurrentAccount, type AddAccount } from '@/domain/usecases'
 import { Link, useNavigate } from 'react-router-dom'
 
 type Props = {
   validation: Validation
   addAccount: AddAccount
-  saveAccessToken: SaveAccessToken
+  updateCurrentAccount: UpdateCurrentAccount
 }
 
 export const SignUp: React.FC<Props> = ({
   validation,
   addAccount,
-  saveAccessToken
+  updateCurrentAccount
 }: Props) => {
   const navigate = useNavigate()
   const [state, setState] = useState({
@@ -83,7 +83,7 @@ export const SignUp: React.FC<Props> = ({
         password: state.password,
         passwordConfirmation: state.passwordConfirmation
       })
-      await saveAccessToken.save(account.accessToken)
+      await updateCurrentAccount.save(account)
       navigate('/')
     } catch (error) {
       setState((oldState) => ({

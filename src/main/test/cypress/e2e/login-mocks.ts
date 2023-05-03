@@ -14,5 +14,5 @@ export const mockOk = (): void => {
 }
 
 export const mockInvalidData = (): void => {
-  Helper.mockOk(/login/i, 'POST', { invalidData: faker.datatype.uuid() })
+  Helper.mockOk(/login/i, 'POST', null)
 }
