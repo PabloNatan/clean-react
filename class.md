@@ -1,2 +1,2 @@
 folder: 11
-class: 1
+class: 6
