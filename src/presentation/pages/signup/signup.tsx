@@ -83,7 +83,7 @@ export const SignUp: React.FC<Props> = ({
         password: state.password,
         passwordConfirmation: state.passwordConfirmation
       })
-      await updateCurrentAccount.save(account)
+      updateCurrentAccount.save(account)
       navigate('/')
     } catch (error) {
       setState((oldState) => ({

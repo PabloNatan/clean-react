@@ -65,7 +65,7 @@ export const Login: React.FC<Props> = ({
         email: state.email,
         password: state.password
       })
-      await updateCurrenctAccount.save(acccount)
+      updateCurrenctAccount.save(acccount)
       navigate('/')
     } catch (error) {
       setState((oldState) => ({

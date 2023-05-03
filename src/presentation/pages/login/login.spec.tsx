@@ -214,7 +214,9 @@ describe('Login Component', () => {
   test('Should present error if UpdateCurrentAccount fails', async () => {
     const { updateCurrentAccountMock } = makeSut()
     const error = new InvalidCredentialsError()
-    jest.spyOn(updateCurrentAccountMock, 'save').mockRejectedValueOnce(error)
+    jest.spyOn(updateCurrentAccountMock, 'save').mockImplementationOnce(() => {
+      throw error
+    })
     await simulateValidSubmitAsync()
     const { errorMessage } = Helper.getFormStatusComponents()
     expect(errorMessage.textContent).toBe(error.message)

@@ -23,7 +23,7 @@ describe('LocalUpdateCurrentAccount', () => {
   test('Should call SetStorage with correct value', async () => {
     const { sut, setStorageMock } = makeSut()
     const account: AccountModel = mockAccountModel()
-    await sut.save(account)
+    sut.save(account)
     expect(setStorageMock.key).toBe('account')
     expect(setStorageMock.value).toBe(JSON.stringify(account))
   })
@@ -32,16 +32,19 @@ describe('LocalUpdateCurrentAccount', () => {
     const { sut, setStorageMock } = makeSut()
     const error = new Error('Invalid Storage')
     try {
-      jest.spyOn(setStorageMock, 'value').mockRejectedValue(error)
-      await sut.save(mockAccountModel())
+      jest.spyOn(setStorageMock, 'value').mockRejectedValue(() => error)
+      sut.save(mockAccountModel())
     } catch (receivedError) {
       expect(receivedError).toEqual(error)
     }
   })
 
   test('Should throw if account is falsy', async () => {
-    const { sut } = makeSut()
-    const promise = sut.save(undefined)
-    await expect(promise).rejects.toThrow(new UnexpectedError())
+    try {
+      const { sut } = makeSut()
+      sut.save(undefined)
+    } catch (error) {
+      expect(error).toEqual(new UnexpectedError())
+    }
   })
 })

@@ -6,11 +6,10 @@ import { type UpdateCurrentAccount } from '@/domain/usecases/update-current-acco
 export class LocalUpdateCurrentAccount implements UpdateCurrentAccount {
   constructor(private readonly setStorage: SetStorage) {}
 
-  async save(account: AccountModel): Promise<void> {
+  save(account: AccountModel): void {
     if (!account) {
       throw new UnexpectedError()
     }
-
     this.setStorage.set('account', JSON.stringify(account))
   }
 }
