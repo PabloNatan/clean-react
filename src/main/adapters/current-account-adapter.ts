@@ -8,3 +8,7 @@ export const setCurrentAccountAdapter = (account: AccountModel): void => {
   }
   makeLocalStorafeAdapter().set('account', account)
 }
+
+export const getCurrentAccountAdapter = (): AccountModel => {
+  return makeLocalStorafeAdapter().get('account')
+}
