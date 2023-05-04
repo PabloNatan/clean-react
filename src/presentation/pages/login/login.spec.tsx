@@ -88,13 +88,9 @@ describe('Login Component', () => {
   test('Should start with initial state', () => {
     const validationError = faker.random.words()
     makeSut({ validationError })
-
-    const { errorMessage, spinner } = Helper.getFormStatusComponents()
-    expect(spinner).not.toBeInTheDocument()
-    expect(errorMessage).not.toBeInTheDocument()
-
-    Helper.testButtonIsDisabled()
-
+    const formStatus = screen.getByRole('status', { name: /request-feedback/i })
+    expect(formStatus).toBeEmptyDOMElement()
+    expect(screen.getByRole('button')).toBeDisabled()
     Helper.testStatusForField('email', validationError)
     Helper.testStatusForField('password', validationError)
   })
@@ -136,8 +132,7 @@ describe('Login Component', () => {
   test('Should show spinner on submit', async () => {
     makeSut()
     await simulateValidSubmitAsync()
-    const { spinner } = Helper.getFormStatusComponents()
-    expect(spinner).toBeInTheDocument()
+    expect(screen.queryByLabelText('spinner')).toBeInTheDocument()
   })
 
   test('Should call Authentication with correct values', async () => {
@@ -191,14 +186,11 @@ describe('Login Component', () => {
   test('Should present error if Authentication fails', async () => {
     const { authenticationSpy } = makeSut()
     const error = new InvalidCredentialsError()
-
     jest.spyOn(authenticationSpy, 'auth').mockRejectedValueOnce(error)
-
     await simulateValidSubmitAsync()
-
     const { errorMessage, spinner } = Helper.getFormStatusComponents()
     expect(spinner).not.toBeInTheDocument()
-    expect(errorMessage.textContent).toBe(error.message)
+    expect(errorMessage).toHaveTextContent(error.message)
   })
 
   test('Should call setCurrentAccountMock on success', async () => {

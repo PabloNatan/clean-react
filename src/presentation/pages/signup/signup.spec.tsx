@@ -111,10 +111,9 @@ describe('Login Component', () => {
   test('Should start with initial state', () => {
     const validationError = faker.random.words()
     makeSut({ validationError })
-    const { errorMessage, spinner } = Helper.getFormStatusComponents()
-    expect(spinner).not.toBeInTheDocument()
-    expect(errorMessage).not.toBeInTheDocument()
-    Helper.testButtonIsDisabled()
+    const formStatus = screen.getByRole('status', { name: /request-feedback/i })
+    expect(formStatus).toBeEmptyDOMElement()
+    expect(screen.getByRole('button')).toBeDisabled()
     Object.keys(signUpFields).forEach((field) => {
       Helper.testStatusForField(field, validationError)
     })

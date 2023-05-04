@@ -13,13 +13,8 @@ export const testStatusForField = (
     'data-status',
     validationError ? 'invalid' : 'valid'
   )
-  expect(input.title).toBe(validationError)
-  expect(inputLabel.title).toBe(validationError)
-}
-
-export const testButtonIsDisabled = (): void => {
-  const button = screen.getByRole('button')
-  expect(button).toBeDisabled()
+  expect(input).toHaveProperty('title', validationError)
+  expect(inputLabel).toHaveProperty('title', validationError)
 }
 
 export const getFormStatusComponents = (): {
