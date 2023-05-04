@@ -11,7 +11,7 @@ import { randomObject } from '@/test'
 
 export const mockPostRequest = (): HttpPostParams<any> => ({
   url: faker.internet.url(),
-  body: randomObject
+  body: randomObject()
 })
 
 export const mockGetRequest = (): HttpGetParams => ({

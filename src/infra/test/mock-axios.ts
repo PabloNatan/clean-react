@@ -3,7 +3,7 @@ import { faker } from '@faker-js/faker'
 import { randomObject } from '@/test'
 
 export const mockHttpResponse = (): any => ({
-  data: randomObject,
+  data: randomObject(),
   status: faker.datatype.number()
 })
 

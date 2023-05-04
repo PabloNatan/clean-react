@@ -3,7 +3,8 @@ import { setCurrentAccountAdapter } from '@/main/adapters'
 import React, { createContext, useContext, type ReactNode } from 'react'
 
 type IApiContext = {
-  setCurrentAccount: (account: AccountModel) => void
+  setCurrentAccount?: (account: AccountModel) => void
+  getCurrentAccount?: () => AccountModel
 }
 
 export const ApiContext = createContext<IApiContext>(null)

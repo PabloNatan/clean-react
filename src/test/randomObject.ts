@@ -1,5 +1,5 @@
 import { faker } from '@faker-js/faker'
-export const randomObject = {
+export const randomObject = (): object => ({
   name: faker.name.firstName(),
   email: faker.internet.email(),
   address: {
@@ -10,4 +10,4 @@ export const randomObject = {
   },
   phone: faker.phone.number(),
   company: faker.company.name()
-}
+})
