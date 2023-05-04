@@ -1,13 +1,13 @@
 /* eslint-disable multiline-ternary */
 import { useApiContext } from '@/presentation/contexts'
-import React from 'react'
-import { Navigate, Route, type RouteProps } from 'react-router-dom'
+import React, { type ReactElement } from 'react'
+import { Navigate } from 'react-router-dom'
 
-export const PrivateRoute: React.FC<RouteProps> = (props: RouteProps) => {
+type Props = {
+  element?: ReactElement
+}
+
+export const PrivateRoute: React.FC<Props> = ({ element = <></> }: Props) => {
   const { getCurrentAccount } = useApiContext()
-  return getCurrentAccount()?.accessToken ? (
-    <Route {...props} />
-  ) : (
-    <Navigate to="/login" />
-  )
+  return getCurrentAccount()?.accessToken ? element : <Navigate to="/login" />
 }

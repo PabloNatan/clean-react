@@ -1,5 +1,8 @@
 import { type AccountModel } from '@/domain/models'
-import { setCurrentAccountAdapter } from '@/main/adapters'
+import {
+  getCurrentAccountAdapter,
+  setCurrentAccountAdapter
+} from '@/main/adapters'
 import React, { createContext, useContext, type ReactNode } from 'react'
 
 type IApiContext = {
@@ -14,7 +17,10 @@ export const ApiContextProvider: React.FC<{ children: ReactNode }> = ({
 }) => {
   return (
     <ApiContext.Provider
-      value={{ setCurrentAccount: setCurrentAccountAdapter }}
+      value={{
+        setCurrentAccount: setCurrentAccountAdapter,
+        getCurrentAccount: getCurrentAccountAdapter
+      }}
     >
       {children}
     </ApiContext.Provider>
