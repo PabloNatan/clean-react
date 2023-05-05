@@ -1,9 +1,11 @@
 import React from 'react'
 import Styles from './icon-styles.scss'
+import thumbDown from '@/presentation/assets/icon-thumb-down.png'
+import thumbUp from '@/presentation/assets/icon-thumb-up.png'
 
-const IconName = {
-  thumbDown: require('@/presentation/assets/icon-thumb-down.png'),
-  thumbUp: require('@/presentation/assets/icon-thumb-up.png')
+export const IconName = {
+  thumbDown,
+  thumbUp
 }
 
 type Props = {
@@ -16,7 +18,7 @@ export const Icon: React.FC<Props> = ({ className, iconName }: Props) => {
 
   return (
     <div className={[Styles.iconWrap, iconColor, className].join(' ')}>
-      <img src={IconName[iconName].default} />
+      <img src={IconName[iconName]} role="icon" />
     </div>
   )
 }

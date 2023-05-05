@@ -1,11 +1,11 @@
+import { type LoadSurveyList } from '@/domain/usecases'
 import { Footer, Header } from '@/presentation/components'
 import React, { useEffect } from 'react'
 import { SurveyItemEmpty } from './components'
 import Styles from './survey-list-styles.scss'
-import { type LoadSurveyList } from '@/domain/usecases'
 
 type Props = {
-  loadSurveyList: LoadSurveyList
+  loadSurveyList?: LoadSurveyList
 }
 
 export const SurveyList: React.FC<Props> = ({ loadSurveyList }: Props) => {
