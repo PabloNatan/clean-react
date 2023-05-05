@@ -1,15 +1,17 @@
-import React from 'react'
-import { render, screen } from '@testing-library/react'
-import { SurveyList } from './survey-list'
-import { type LoadSurveyList } from '@/domain/usecases'
 import { type SurveyModel } from '@/domain/models'
 import { mockSurveyList } from '@/domain/test'
+import { type LoadSurveyList } from '@/domain/usecases'
+import { render, screen } from '@testing-library/react'
+import React from 'react'
+import { SurveyList } from './survey-list'
+import { UnexpectedError } from '@/domain/errors'
 
 class LoadSurveyListSpy implements LoadSurveyList {
+  constructor(private readonly numberOfSurveys = 5) {}
   callsCount = 0
   async loadAll(): Promise<SurveyModel[]> {
     this.callsCount++
-    return mockSurveyList()
+    return mockSurveyList(this.numberOfSurveys)
   }
 }
 
@@ -17,20 +19,42 @@ type SutTypes = {
   loadSurveyListSpy: LoadSurveyListSpy
 }
 
-const makeSut = (): SutTypes => {
-  const loadSurveyListSpy = new LoadSurveyListSpy()
+const makeSut = (loadSurveyListSpy = new LoadSurveyListSpy(4)): SutTypes => {
   render(<SurveyList loadSurveyList={loadSurveyListSpy} />)
   return { loadSurveyListSpy }
 }
 
 describe('SuveyList Component', () => {
-  test('Should present 4 empty items on start', () => {
+  test('Should present 4 empty items on start', async () => {
     makeSut()
-    expect(screen.getAllByRole('listitem')).toHaveLength(4)
+    const emptySurveys = await screen.findAllByRole('listitem', {
+      name: /survey-empty$/i
+    })
+    expect(screen.queryByTestId('error-wrap')).not.toBeInTheDocument()
+    expect(emptySurveys).toHaveLength(4)
   })
 
-  test('Should call LoadSurveyList', () => {
+  test('Should call LoadSurveyList', async () => {
     const { loadSurveyListSpy } = makeSut()
+    await screen.findByRole('heading')
     expect(loadSurveyListSpy.callsCount).toBe(1)
+  })
+
+  test('Should render SurveyItems on success', async () => {
+    makeSut()
+    const surveys = await screen.findAllByRole('listitem', { name: /survey$/i })
+    expect(screen.queryByTestId('error-wrap')).not.toBeInTheDocument()
+    expect(surveys).toHaveLength(4)
+  })
+
+  test('Should render Error on fail', async () => {
+    const loadSurveyListSpy = new LoadSurveyListSpy()
+    const error = new UnexpectedError()
+    jest.spyOn(loadSurveyListSpy, 'loadAll').mockRejectedValueOnce(error)
+    makeSut(loadSurveyListSpy)
+    const errorMessage = await screen.findByText(error.message)
+    const surveyList = screen.queryByRole('list')
+    expect(surveyList).not.toBeInTheDocument()
+    expect(errorMessage).toBeInTheDocument()
   })
 })

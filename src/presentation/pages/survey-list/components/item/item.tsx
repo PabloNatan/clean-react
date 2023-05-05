@@ -1,8 +1,7 @@
-import { Icon } from '@/presentation/components'
 import React from 'react'
-
-import Styles from './survey-item-styles.scss'
+import { Icon } from '@/presentation/components'
 import { type SurveyModel } from '@/domain/models'
+import Styles from './item-styles.scss'
 
 type Props = {
   survey: SurveyModel
@@ -10,7 +9,7 @@ type Props = {
 
 export const SurveyItem: React.FC<Props> = ({ survey }: Props) => {
   return (
-    <li className={Styles.surveyItemWrap}>
+    <li className={Styles.surveyItemWrap} aria-label="survey">
       <div className={Styles.surveyContent}>
         <Icon
           iconName={survey.didAnswer ? 'thumbUp' : 'thumbDown'}

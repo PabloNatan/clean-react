@@ -1,12 +1,12 @@
-import { mockSurveyModal } from '@/domain/test'
+import { mockSurveyModel } from '@/domain/test'
 import { IconName } from '@/presentation/components'
 import { render, screen } from '@testing-library/react'
 import React from 'react'
-import { SurveyItem } from './survey-item'
+import { SurveyItem } from './item'
 
 describe('SurveyItem Component', () => {
   it('Should render with correct values', async () => {
-    const survey = Object.assign(mockSurveyModal(), {
+    const survey = Object.assign(mockSurveyModel(), {
       didAnswer: true,
       date: new Date('2020-01-10T00:00:00')
     })
@@ -19,7 +19,7 @@ describe('SurveyItem Component', () => {
   })
 
   it('Should render with correct values', async () => {
-    const survey = Object.assign(mockSurveyModal(), {
+    const survey = Object.assign(mockSurveyModel(), {
       didAnswer: false,
       date: new Date('2019-05-03T00:00:00')
     })
