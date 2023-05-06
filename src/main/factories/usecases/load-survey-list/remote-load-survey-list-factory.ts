@@ -5,7 +5,7 @@ import { type LoadSurveyList } from '@/domain/usecases'
 
 export const makeRemoteLoadSurveyList = (): LoadSurveyList => {
   return new RemoteLoadSurveyList(
-    makeApiUrl('surveys'),
+    makeApiUrl('/surveys'),
     makeAuthorizeHttpGetClientDecorator()
   )
 }
