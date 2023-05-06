@@ -5,6 +5,6 @@ export type HttpGetParams = {
   headers?: any
 }
 
-export interface HttpGetClient<ResponseType> {
+export interface HttpGetClient<ResponseType = any> {
   get: (params: HttpGetParams) => Promise<HttpResponse<ResponseType>>
 }
