@@ -1,9 +1,9 @@
 import { HttpStatusCode } from '@/data/protocols/http'
-import { HttpGetClientSpy } from '@/data/test'
+import { HttpGetClientSpy, mockRemoteSurveyList } from '@/data/test'
 import { UnexpectedError } from '@/domain/errors'
-import { mockSurveyList } from '@/domain/test/mock-survey-list'
+
 import { faker } from '@faker-js/faker'
-import { RemoteLoadSurveyList } from './load-survey-list'
+import { RemoteLoadSurveyList } from './remote-load-survey-list'
 
 type SutTypes = {
   sut: RemoteLoadSurveyList
@@ -53,7 +53,7 @@ describe('RemoteLoadSurveyLIst', () => {
 
   it('Should return a list of LoadSurveyList.Model if HttpGetClient returns 200', async () => {
     const { sut, httpGetClientSpy } = makeSut()
-    const httpResult = mockSurveyList()
+    const httpResult = mockRemoteSurveyList()
     httpGetClientSpy.response = {
       statusCode: HttpStatusCode.ok,
       body: httpResult
