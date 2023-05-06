@@ -10,11 +10,12 @@ import user from '@testing-library/user-event'
 import React from 'react'
 
 import { EmailInUseError } from '@/domain/errors'
-import { type AccountModel } from '@/domain/models'
+import { type AddAccount } from '@/domain/usecases'
 import { ApiContext } from '@/presentation/contexts'
 import { SignUp } from '@/presentation/pages'
-import { AddAccountSpy, Helper, ValidationStub } from '@/presentation/test'
+import { Helper, ValidationStub } from '@/presentation/test'
 import { RouterProvider, createMemoryRouter } from 'react-router-dom'
+import { AddAccountSpy } from '@/domain/test'
 
 const signUpFields = {
   name: '',
@@ -28,7 +29,7 @@ type SutTypes = {
   history: ReturnType<typeof createMemoryRouter>
   validationSpy: ValidationStub
   addAccountSpy: AddAccountSpy
-  setCurrentAccountMock: (account: AccountModel) => void
+  setCurrentAccountMock: (account: AddAccount.Model) => void
 }
 
 type SutParams = {
