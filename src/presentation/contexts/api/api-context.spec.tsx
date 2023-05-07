@@ -17,7 +17,7 @@ const Children: React.FC = () => {
   const { getCurrentAccount, setCurrentAccount } = useApiContext()
   useEffect(() => {
     getCurrentAccount()
-    setCurrentAccount({ accessToken: '' })
+    setCurrentAccount({ accessToken: '', name: 'Juan' })
   }, [])
   return <div>Child Element</div>
 }

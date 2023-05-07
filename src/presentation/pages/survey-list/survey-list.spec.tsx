@@ -1,5 +1,5 @@
 import { UnexpectedError } from '@/domain/errors'
-import { LoadSurveyListSpy } from '@/domain/test'
+import { LoadSurveyListSpy, mockAccountModel } from '@/domain/test'
 import { render, screen } from '@testing-library/react'
 import user from '@testing-library/user-event'
 import React from 'react'
@@ -16,7 +16,12 @@ const makeSut = (loadSurveyListSpy = new LoadSurveyListSpy(4)): SutTypes => {
     { path: '/', element: <SurveyList loadSurveyList={loadSurveyListSpy} /> }
   ])
   render(
-    <ApiContext.Provider value={{ setCurrentAccount: jest.fn() }}>
+    <ApiContext.Provider
+      value={{
+        setCurrentAccount: jest.fn(),
+        getCurrentAccount: () => mockAccountModel()
+      }}
+    >
       <RouterProvider router={history} />
     </ApiContext.Provider>
   )
