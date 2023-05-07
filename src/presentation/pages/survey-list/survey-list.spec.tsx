@@ -4,13 +4,22 @@ import { render, screen } from '@testing-library/react'
 import user from '@testing-library/user-event'
 import React from 'react'
 import { SurveyList } from './survey-list'
+import { ApiContext } from '@/presentation/contexts'
+import { RouterProvider, createMemoryRouter } from 'react-router-dom'
 
 type SutTypes = {
   loadSurveyListSpy: LoadSurveyListSpy
 }
 
 const makeSut = (loadSurveyListSpy = new LoadSurveyListSpy(4)): SutTypes => {
-  render(<SurveyList loadSurveyList={loadSurveyListSpy} />)
+  const history = createMemoryRouter([
+    { path: '/', element: <SurveyList loadSurveyList={loadSurveyListSpy} /> }
+  ])
+  render(
+    <ApiContext.Provider value={{ setCurrentAccount: jest.fn() }}>
+      <RouterProvider router={history} />
+    </ApiContext.Provider>
+  )
   return { loadSurveyListSpy }
 }
 
