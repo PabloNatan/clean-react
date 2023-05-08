@@ -3,8 +3,11 @@ import { type Method } from 'cypress/types/net-stubbing'
 
 const delay = 300
 
-export const mockUnauthorizedError = (url: RegExp): void => {
-  cy.intercept('POST', url, {
+export const mockUnauthorizedError = (
+  url: RegExp,
+  method: Method = 'POST'
+): void => {
+  cy.intercept(method, url, {
     statusCode: 401,
     delay,
     body: {
