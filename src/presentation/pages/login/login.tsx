@@ -34,20 +34,31 @@ export const Login: React.FC<Props> = ({
     isFormValid: false
   })
 
+  const validate = (oldState: typeof state, field: string): typeof state => {
+    const formData = { email: oldState.email, password: oldState.password }
+    const fieldError = validation.validate(field, formData)
+    const { emailError, passwordError } = oldState
+    return {
+      ...oldState,
+      [`${field}Error`]: fieldError,
+      isFormValid: !fieldError && !emailError && !passwordError
+    }
+  }
+
   useEffect(() => {
-    setState((oldState) => {
-      const { email, password } = oldState
-      const formData = { email, password }
-      const emailError = validation.validate('email', formData)
-      const passwordError = validation.validate('password', formData)
-      return {
-        ...oldState,
-        emailError,
-        passwordError,
-        isFormValid: !emailError && !passwordError
-      }
-    })
-  }, [state.email, state.password])
+    setState((oldState) => validate(oldState, 'email'))
+  }, [state.email])
+
+  useEffect(() => {
+    setState((oldState) => validate(oldState, 'password'))
+  }, [state.password])
+
+  useEffect(() => {
+    setState((old) => ({
+      ...old,
+      isFormValid: !old.emailError && !old.passwordError
+    }))
+  }, [state.emailError, state.passwordError])
 
   async function handleSubmit(
     event: React.FormEvent<HTMLFormElement>

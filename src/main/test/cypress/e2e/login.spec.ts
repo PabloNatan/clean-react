@@ -49,7 +49,7 @@ describe('Login', () => {
     FormHelper.testInputStatus('email')
     cy.typeByLabel('password', faker.random.alphaNumeric(5))
     FormHelper.testInputStatus('password')
-    cy.get('button[type=submit]').should('not.have.attr', 'disabled')
+    cy.findByRole('button').should('not.have.attr', 'disabled')
     cy.getByLabel('request-feedback').should('not.have.descendants')
   })
 
