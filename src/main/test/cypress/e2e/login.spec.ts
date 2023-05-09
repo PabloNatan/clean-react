@@ -3,8 +3,6 @@ import * as FormHelper from '../utils/form-helper'
 import * as Helper from '../utils/helpers'
 import * as Http from '../utils/http-mocks'
 
-const account = require('../fixtures/account.json')
-
 const path = /login/i
 const mockInvalidCredentialsError = (): void => {
   Http.mockUnauthorizedError(path)
@@ -12,8 +10,8 @@ const mockInvalidCredentialsError = (): void => {
 const mockUnexpectedError = (): void => {
   Http.mockServerError(path, 'POST')
 }
-const mockOk = (): void => {
-  Http.mockOk(path, 'POST', account)
+const mockSuccess = (): void => {
+  Http.mockOk(path, 'POST', 'account')
 }
 
 const populateFields = (): void => {
@@ -72,21 +70,21 @@ describe('Login', () => {
   })
 
   it('Should present save account if valid credentials are provided', () => {
-    mockOk()
+    mockSuccess()
     simulateValidSubmit()
     Helper.testUrl('/')
     Helper.testLocalStorageItem('account')
   })
 
   it('Should present multiple submits', () => {
-    mockOk()
+    mockSuccess()
     populateFields()
     cy.get('button[type=submit]').dblclick()
     Helper.testHttpCallsCount(1)
   })
 
   it('Should not call submit if form is invalid', () => {
-    mockOk()
+    mockSuccess()
     cy.typeByLabel('email', faker.internet.email()).type('{enter}')
     Helper.testHttpCallsCount(0)
   })

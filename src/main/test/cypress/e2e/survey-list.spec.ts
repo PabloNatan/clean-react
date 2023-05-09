@@ -8,6 +8,9 @@ const mockUnexpectedError = (): void => {
 const mockAccessDeniedError = (): void => {
   Http.mockUnauthorizedError(path, 'GET')
 }
+const mockSuccess = (): void => {
+  Http.mockOk(path, 'GET', 'survey-list')
+}
 
 describe('SurveyList', () => {
   beforeEach(() => {
@@ -25,6 +28,17 @@ describe('SurveyList', () => {
     )
   })
 
+  it('Should reload ob button click', () => {
+    mockUnexpectedError()
+    cy.findByTestId('error-wrap').should(
+      'contain.text',
+      'Algo de errado aconteceu. Tente novamente em breve'
+    )
+    mockSuccess()
+    cy.findByRole('button', { name: /tentar novamente/i }).click()
+    cy.findAllByRole('listitem', { name: /survey$/i }).should('have.length', 2)
+  })
+
   it('Should present error on UnexpectedError', () => {
     mockAccessDeniedError()
     Helper.testUrl('/login')
@@ -40,5 +54,28 @@ describe('SurveyList', () => {
     mockUnexpectedError()
     cy.findByRole('link', { name: /sair/i }).click()
     Helper.testUrl('/login')
+  })
+
+  it('Should present survey items', () => {
+    mockSuccess()
+    cy.findAllByRole('listitem', { name: /survey-empty$/i }).should(
+      'have.length',
+      4
+    )
+    cy.findAllByRole('listitem', { name: /survey$/i }).should('have.length', 2)
+    cy.get('li:nth-child(1)').then((li) => {
+      assert.equal(li.find('[data-testid="day"]').text(), '03')
+      assert.equal(li.find('[data-testid="month"]').text(), 'fev')
+      assert.equal(li.find('[data-testid="year"]').text(), '2018')
+      assert.equal(li.find('[role="paragraph"]').text(), 'Question 1')
+      assert.equal(li.find('[role="icon"]').attr('data-icon-name'), 'thumbUp')
+    })
+    cy.get('li:nth-child(2)').then((li) => {
+      assert.equal(li.find('[data-testid="day"]').text(), '08')
+      assert.equal(li.find('[data-testid="month"]').text(), 'mai')
+      assert.equal(li.find('[data-testid="year"]').text(), '2020')
+      assert.equal(li.find('[role="paragraph"]').text(), 'Question 2')
+      assert.equal(li.find('[role="icon"]').attr('data-icon-name'), 'thumbDown')
+    })
   })
 })
