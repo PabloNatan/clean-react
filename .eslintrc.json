@@ -30,6 +30,7 @@
     "@typescript-eslint/brace-style": "off",
     "space-before-function-paren": "off",
     "@typescript-eslint/indent": "off",
+    "@typescript-eslint/no-var-requires": "off",
     "no-redeclare": "off",
     "import/export": "off",
     "react/prop-types": "off",

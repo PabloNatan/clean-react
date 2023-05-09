@@ -1,7 +1,20 @@
 import { faker } from '@faker-js/faker'
 import * as FormHelper from '../utils/form-helper'
 import * as Helper from '../utils/helpers'
-import * as Http from './login-mocks'
+import * as Http from '../utils/http-mocks'
+
+const account = require('../fixtures/account.json')
+
+const path = /login/i
+const mockInvalidCredentialsError = (): void => {
+  Http.mockUnauthorizedError(path)
+}
+const mockUnexpectedError = (): void => {
+  Http.mockServerError(path, 'POST')
+}
+const mockOk = (): void => {
+  Http.mockOk(path, 'POST', account)
+}
 
 const populateFields = (): void => {
   cy.typeByLabel('email', faker.internet.email())
@@ -43,14 +56,14 @@ describe('Login', () => {
   })
 
   it('Should present InvalidCredentialsError on 401', () => {
-    Http.mockInvalidCredentialsError()
+    mockInvalidCredentialsError()
     simulateValidSubmit()
     FormHelper.testMainError('Credenciais inválidas')
     Helper.testUrl('/login')
   })
 
   it('Should present Unexpected Error on 400', () => {
-    Http.mockUnexpectedError()
+    mockUnexpectedError()
     simulateValidSubmit()
     FormHelper.testMainError(
       'Algo de errado aconteceu. Tente novamente em breve'
@@ -59,21 +72,21 @@ describe('Login', () => {
   })
 
   it('Should present save account if valid credentials are provided', () => {
-    Http.mockOk()
+    mockOk()
     simulateValidSubmit()
     Helper.testUrl('/')
     Helper.testLocalStorageItem('account')
   })
 
   it('Should present multiple submits', () => {
-    Http.mockOk()
+    mockOk()
     populateFields()
     cy.get('button[type=submit]').dblclick()
     Helper.testHttpCallsCount(1)
   })
 
   it('Should not call submit if form is invalid', () => {
-    Http.mockOk()
+    mockOk()
     cy.typeByLabel('email', faker.internet.email()).type('{enter}')
     Helper.testHttpCallsCount(0)
   })

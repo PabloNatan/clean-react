@@ -2,10 +2,10 @@ import { defineConfig } from 'cypress'
 
 export default defineConfig({
   fileServerFolder: 'src/main/test/cypress',
-  fixturesFolder: 'src/main/test/cypres/fixtures',
-  screenshotsFolder: 'src/main/test/cypres/screenshots',
-  videosFolder: 'src/main/test/cypres/videos',
-  downloadsFolder: 'src/main/test/cypres/downloads',
+  fixturesFolder: 'src/main/test/cypress/fixtures',
+  screenshotsFolder: 'src/main/test/cypress/screenshots',
+  videosFolder: 'src/main/test/cypress/videos',
+  downloadsFolder: 'src/main/test/cypress/downloads',
 
   e2e: {
     specPattern: 'src/main/test/cypress/**/**/*.spec.{js,jsx,ts,tsx}',
