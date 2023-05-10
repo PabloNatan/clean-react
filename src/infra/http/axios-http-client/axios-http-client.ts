@@ -3,10 +3,11 @@ import {
   type HttpResponse,
   type HttpPostParams,
   type HttpPostClient,
-  type HttpGetParams
+  type HttpGetParams,
+  type HttpGetClient
 } from '@/data/protocols/http'
 
-export class AxiosHttpClient implements HttpPostClient {
+export class AxiosHttpClient implements HttpPostClient, HttpGetClient {
   private adapt(axiosResponse: AxiosResponse): HttpResponse {
     return {
       statusCode: axiosResponse.status,

@@ -24,7 +24,7 @@ describe('RemoteLoadSurveyLIst', () => {
     expect(httpGetClientSpy.url).toBe(url)
   })
 
-  it('Should throw UnexpectedError if HttpGetClient returns 401', async () => {
+  it('Should throw AccessDeniedError if HttpGetClient returns 401', async () => {
     const { httpGetClientSpy, sut } = makeSut()
     httpGetClientSpy.response = {
       statusCode: HttpStatusCode.unauthorized
