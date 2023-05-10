@@ -51,6 +51,7 @@ module.exports = merge(common, {
       }
     ]
   },
+  devtool: 'inline-source-map',
   devServer: {
     historyApiFallback: true,
     devMiddleware: {
