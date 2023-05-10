@@ -4,8 +4,7 @@ const { CleanWebpackPlugin } = require('clean-webpack-plugin')
 module.exports = {
   entry: './src/main/index.tsx',
   output: {
-    path: path.join(__dirname, 'dist/'),
-    publicPath: '/dist',
+    path: path.join(__dirname, 'dist'),
     filename: 'main-bundle-[hash].js'
   },
   resolve: {

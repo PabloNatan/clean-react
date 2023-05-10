@@ -49,7 +49,7 @@ describe('AuthorizeHttpGetClient', () => {
     await sut.get(httpRequest)
     expect(httpGetClientSpy.url).toBe(httpRequest.url)
     expect(httpGetClientSpy.headers).toEqual({
-      'x-access-token': getStorageSpy.value.accessToken
+      'x-authorization-token': getStorageSpy.value.accessToken
     })
   })
 
@@ -67,7 +67,7 @@ describe('AuthorizeHttpGetClient', () => {
     expect(httpGetClientSpy.url).toBe(httpRequest.url)
     expect(httpGetClientSpy.headers).toEqual({
       field,
-      'x-access-token': getStorageSpy.value.accessToken
+      'x-authorization-token': getStorageSpy.value.accessToken
     })
   })
 
