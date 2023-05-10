@@ -97,6 +97,7 @@ describe('SignUp', () => {
     mockCreated()
     populateFields()
     cy.get('button[type=submit]').dblclick()
+    cy.wait('@request')
     Helper.testHttpCallsCount(1)
   })
 

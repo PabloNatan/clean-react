@@ -59,7 +59,8 @@ module.exports = merge(common, {
     },
     static: {
       directory: './public'
-    }
+    },
+    port: 8080
   },
   plugins: [
     new DefinePlugin({
