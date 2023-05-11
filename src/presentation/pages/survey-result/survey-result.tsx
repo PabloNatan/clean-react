@@ -1,4 +1,4 @@
-import { Footer, Header, Spinner } from '@/presentation/components'
+import { Footer, Header, Loading } from '@/presentation/components'
 import React from 'react'
 import FlipMove from 'react-flip-move'
 import { reactIcon } from './react-icon'
@@ -28,12 +28,7 @@ export const SurveyResult: React.FC = () => {
           </li>
         </FlipMove>
         <button>Voltar</button>
-        <div className={Styles.loadingWrap}>
-          <div className={Styles.loading}>
-            <span>Aguarde...</span>
-            <Spinner isNegative />
-          </div>
-        </div>
+        {false && <Loading />}
       </div>
       <Footer />
     </div>

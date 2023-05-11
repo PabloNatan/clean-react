@@ -1,7 +1,8 @@
 import { useApiContext } from '@/presentation/contexts'
 import { useLogout } from '@/presentation/hooks'
+import { Logo } from '@/presentation/components'
 import React, { memo } from 'react'
-import { Logo } from '../logo'
+
 import Styles from './header-styles.scss'
 
 const HeaderComponent: React.FC = () => {
