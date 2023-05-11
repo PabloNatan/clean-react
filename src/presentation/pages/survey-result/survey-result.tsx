@@ -1,4 +1,4 @@
-import { Footer, Header, Loading } from '@/presentation/components'
+import { Calendar, Footer, Header, Loading } from '@/presentation/components'
 import React from 'react'
 import FlipMove from 'react-flip-move'
 import { reactIcon } from './react-icon'
@@ -9,7 +9,10 @@ export const SurveyResult: React.FC = () => {
     <div className={Styles.surveyResultWrap}>
       <Header />
       <div className={Styles.contentWrap}>
-        <h2>Qual é seu framework web favorito?</h2>
+        <hgroup>
+          <Calendar date={new Date()} className={Styles.calendarWrap} />
+          <h2>Qual é seu framework web favorito?</h2>
+        </hgroup>
         <FlipMove className={Styles.answerList}>
           <li className={Styles.active}>
             <img src={reactIcon} />
