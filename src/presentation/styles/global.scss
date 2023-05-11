@@ -16,7 +16,6 @@ input[type='password'],
 input[type='email'],
 input[type='text'] {
   border: none;
-  outline: none;
 }
 
 button {
@@ -29,6 +28,7 @@ button {
   cursor: pointer;
   font-weight: bold;
   padding: 0 16px;
+  outline: none;
 
   &:disabled {
     background-color: $disabledBackground;
