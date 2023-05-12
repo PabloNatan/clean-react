@@ -6,7 +6,7 @@ import {
   makeLogin,
   makeSignUp,
   makeSurveyList,
-  makeSurveyResult
+  MakeSurveyResult
 } from '../factories/pages'
 
 export const router = createBrowserRouter([
@@ -15,6 +15,6 @@ export const router = createBrowserRouter([
   { path: '/signup', element: makeSignUp({}) },
   {
     path: '/surveys/:id',
-    element: <PrivateRoute element={makeSurveyResult({})} />
+    element: <PrivateRoute element={<MakeSurveyResult />} />
   }
 ])

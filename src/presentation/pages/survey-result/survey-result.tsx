@@ -6,10 +6,10 @@ import {
   Header,
   Loading
 } from '@/presentation/components'
+import { useErrorHandler } from '@/presentation/hooks'
 import React, { useEffect, useState } from 'react'
 import FlipMove from 'react-flip-move'
 import Styles from './survey-result-styles.scss'
-import { useErrorHandler } from '@/presentation/hooks'
 
 type Props = {
   loadSurveyResult: LoadSurveyResult
