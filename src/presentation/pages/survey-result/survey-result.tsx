@@ -27,7 +27,9 @@ export const SurveyResult: React.FC<Props> = ({ loadSurveyResult }: Props) => {
       .then((surveyResult) => {
         setState((old) => ({ ...old, surveyResult }))
       })
-      .catch()
+      .catch((error) => {
+        setState((old) => ({ ...old, error: error.message }))
+      })
   }, [])
 
   return (
@@ -62,10 +64,10 @@ export const SurveyResult: React.FC<Props> = ({ loadSurveyResult }: Props) => {
               ))}
             </FlipMove>
             <button>Voltar</button>
-            {state.isLoading && <Loading />}
-            {state.error && <Error error={state.error} reload={() => {}} />}
           </>
         )}
+        {state.isLoading && <Loading />}
+        {state.error && <Error error={state.error} reload={() => {}} />}
       </div>
       <Footer />
     </div>

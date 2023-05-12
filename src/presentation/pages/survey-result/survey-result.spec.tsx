@@ -8,14 +8,13 @@ import {
 } from '@/domain/test'
 import { ApiContext } from '@/presentation/contexts'
 import { RouterProvider, createMemoryRouter } from 'react-router-dom'
+import { UnexpectedError } from '@/domain/errors'
 
 type SutTypes = {
   loadSurveyResultSpy: LoadSurveyResultSpy
 }
 
-const makeSut = (surveyResult = mockSurveyResultModel()): SutTypes => {
-  const loadSurveyResultSpy = new LoadSurveyResultSpy()
-  loadSurveyResultSpy.surveyResult = surveyResult
+const makeSut = (loadSurveyResultSpy = new LoadSurveyResultSpy()): SutTypes => {
   const history = createMemoryRouter(
     [
       {
@@ -29,7 +28,6 @@ const makeSut = (surveyResult = mockSurveyResultModel()): SutTypes => {
       initialEntries: ['/surveys']
     }
   )
-
   render(
     <ApiContext.Provider
       value={{
@@ -40,7 +38,6 @@ const makeSut = (surveyResult = mockSurveyResultModel()): SutTypes => {
       <RouterProvider router={history} />
     </ApiContext.Provider>
   )
-
   return { loadSurveyResultSpy }
 }
 
@@ -61,10 +58,12 @@ describe('SurveyResult Component', () => {
   })
 
   test('Should call LoadSurveyResult', async () => {
+    const loadSurveyListSpy = new LoadSurveyResultSpy()
     const surveyResult = Object.assign(mockSurveyResultModel(), {
       date: new Date('2020-01-10T00:00:00')
     })
-    makeSut(surveyResult)
+    loadSurveyListSpy.surveyResult = surveyResult
+    makeSut(loadSurveyListSpy)
     await screen.findByTestId('survey-result')
     expect(screen.getByTestId('day')).toHaveTextContent('10')
     expect(screen.getByTestId('month')).toHaveTextContent('jan')
@@ -89,5 +88,16 @@ describe('SurveyResult Component', () => {
       expect(answerComponent).toHaveTextContent(answerResponse.answer)
       expect(percentComponent).toHaveTextContent(`${answerResponse.percent}%`)
     })
+  })
+
+  test('Should render Error on UnexpectedError', async () => {
+    const loadSurveyListSpy = new LoadSurveyResultSpy()
+    const error = new UnexpectedError()
+    jest.spyOn(loadSurveyListSpy, 'load').mockRejectedValueOnce(error)
+    makeSut(loadSurveyListSpy)
+    expect(screen.queryAllByRole('li')).toHaveLength(0)
+    expect(screen.queryByTestId('loading-wrap')).not.toBeInTheDocument()
+    const errorMessage = await screen.findByText(error.message)
+    expect(errorMessage).toBeInTheDocument()
   })
 })
