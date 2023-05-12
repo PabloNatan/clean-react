@@ -9,28 +9,40 @@ import {
 import React, { useEffect, useState } from 'react'
 import FlipMove from 'react-flip-move'
 import Styles from './survey-result-styles.scss'
+import { useErrorHandler } from '@/presentation/hooks'
 
 type Props = {
   loadSurveyResult: LoadSurveyResult
 }
 
 export const SurveyResult: React.FC<Props> = ({ loadSurveyResult }: Props) => {
+  const handlerError = useErrorHandler((error) => {
+    setState({ ...state, surveyResult: null, error: error.message })
+  })
   const [state, setState] = useState({
     isLoading: false,
+    reload: false,
     error: '',
     surveyResult: null as LoadSurveyResult.Model
   })
+
+  const handleReload = (): void => {
+    setState((old) => ({
+      ...old,
+      error: '',
+      surveyResult: null,
+      reload: !old.reload
+    }))
+  }
 
   useEffect(() => {
     loadSurveyResult
       .load()
       .then((surveyResult) => {
-        setState((old) => ({ ...old, surveyResult }))
+        setState((old) => ({ ...old, surveyResult, isLoading: false }))
       })
-      .catch((error) => {
-        setState((old) => ({ ...old, error: error.message }))
-      })
-  }, [])
+      .catch(handlerError)
+  }, [state.reload])
 
   return (
     <div className={Styles.surveyResultWrap}>
@@ -67,7 +79,7 @@ export const SurveyResult: React.FC<Props> = ({ loadSurveyResult }: Props) => {
           </>
         )}
         {state.isLoading && <Loading />}
-        {state.error && <Error error={state.error} reload={() => {}} />}
+        {state.error && <Error error={state.error} reload={handleReload} />}
       </div>
       <Footer />
     </div>

@@ -1,20 +1,25 @@
 import React from 'react'
+import { RouterProvider, createMemoryRouter } from 'react-router-dom'
 import { render, screen, waitFor, within } from '@testing-library/react'
-import { SurveyResult } from './survey-result'
 import {
   LoadSurveyResultSpy,
   mockAccountModel,
   mockSurveyResultModel
 } from '@/domain/test'
 import { ApiContext } from '@/presentation/contexts'
-import { RouterProvider, createMemoryRouter } from 'react-router-dom'
-import { UnexpectedError } from '@/domain/errors'
+import { AccessDeniedError, UnexpectedError } from '@/domain/errors'
+import { type AccountModel } from '@/domain/models'
+import user from '@testing-library/user-event'
+import { SurveyResult } from './survey-result'
 
 type SutTypes = {
   loadSurveyResultSpy: LoadSurveyResultSpy
+  history: ReturnType<typeof createMemoryRouter>
+  setCurrentAccountMock: (account: AccountModel) => void
 }
 
 const makeSut = (loadSurveyResultSpy = new LoadSurveyResultSpy()): SutTypes => {
+  const setCurrentAccountMock = jest.fn()
   const history = createMemoryRouter(
     [
       {
@@ -31,14 +36,14 @@ const makeSut = (loadSurveyResultSpy = new LoadSurveyResultSpy()): SutTypes => {
   render(
     <ApiContext.Provider
       value={{
-        setCurrentAccount: jest.fn(),
+        setCurrentAccount: setCurrentAccountMock,
         getCurrentAccount: () => mockAccountModel()
       }}
     >
       <RouterProvider router={history} />
     </ApiContext.Provider>
   )
-  return { loadSurveyResultSpy }
+  return { loadSurveyResultSpy, history, setCurrentAccountMock }
 }
 
 describe('SurveyResult Component', () => {
@@ -91,13 +96,37 @@ describe('SurveyResult Component', () => {
   })
 
   test('Should render Error on UnexpectedError', async () => {
-    const loadSurveyListSpy = new LoadSurveyResultSpy()
+    const loadSurveyResultSpy = new LoadSurveyResultSpy()
     const error = new UnexpectedError()
-    jest.spyOn(loadSurveyListSpy, 'load').mockRejectedValueOnce(error)
-    makeSut(loadSurveyListSpy)
+    jest.spyOn(loadSurveyResultSpy, 'load').mockRejectedValueOnce(error)
+    makeSut(loadSurveyResultSpy)
     expect(screen.queryAllByRole('li')).toHaveLength(0)
     expect(screen.queryByTestId('loading-wrap')).not.toBeInTheDocument()
     const errorMessage = await screen.findByText(error.message)
     expect(errorMessage).toBeInTheDocument()
+  })
+
+  test('Should logout on AccessDeniedError', async () => {
+    const loadSurveyResultSpy = new LoadSurveyResultSpy()
+    jest
+      .spyOn(loadSurveyResultSpy, 'load')
+      .mockRejectedValueOnce(new AccessDeniedError())
+    const { setCurrentAccountMock, history } = makeSut(loadSurveyResultSpy)
+    await screen.findByRole('link')
+    expect(setCurrentAccountMock).toHaveBeenCalledWith(undefined)
+    expect(history.state.location.pathname).toBe('/login')
+  })
+
+  test('Should call LoadSurveyResult on reload', async () => {
+    const loadSurveyResultSpy = new LoadSurveyResultSpy()
+    jest
+      .spyOn(loadSurveyResultSpy, 'load')
+      .mockRejectedValueOnce(new UnexpectedError())
+    makeSut(loadSurveyResultSpy)
+    const button = await screen.findByRole('button', {
+      name: /tentar novamente/i
+    })
+    await user.click(button)
+    expect(loadSurveyResultSpy.callsCount).toBe(1)
   })
 })
