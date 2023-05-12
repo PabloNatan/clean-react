@@ -6,7 +6,7 @@
   "scripts": {
     "start": "node index",
     "dev:base": "webpack-dev-server --config webpack.config.dev.js",
-    "dev": "npm run dev:base -- --open",
+    "start:dev": "npm run dev:base -- --open",
     "build": "webpack --config webpack.config.prod.js",
     "lint": "eslint .",
     "lint:fix": "npm run lint -- --fix",
