@@ -1,3 +1,4 @@
+import { type LoadSurveyResult } from '@/domain/usecases'
 import {
   Calendar,
   Error,
@@ -7,24 +8,27 @@ import {
 } from '@/presentation/components'
 import React, { useEffect, useState } from 'react'
 import FlipMove from 'react-flip-move'
-import { reactIcon } from './react-icon'
 import Styles from './survey-result-styles.scss'
-import { type LoadSurveyResult } from '@/domain/usecases'
 
 type Props = {
   loadSurveyResult: LoadSurveyResult
 }
 
 export const SurveyResult: React.FC<Props> = ({ loadSurveyResult }: Props) => {
-  const [state] = useState({
+  const [state, setState] = useState({
     isLoading: false,
     error: '',
     surveyResult: null as LoadSurveyResult.Model
   })
 
   useEffect(() => {
-    loadSurveyResult.load().then().catch()
-  })
+    loadSurveyResult
+      .load()
+      .then((surveyResult) => {
+        setState((old) => ({ ...old, surveyResult }))
+      })
+      .catch()
+  }, [])
 
   return (
     <div className={Styles.surveyResultWrap}>
@@ -33,25 +37,29 @@ export const SurveyResult: React.FC<Props> = ({ loadSurveyResult }: Props) => {
         {state.surveyResult && (
           <>
             <hgroup>
-              <Calendar date={new Date()} className={Styles.calendarWrap} />
-              <h2>Qual é seu framework web favorito?</h2>
+              <Calendar
+                date={state.surveyResult.date}
+                className={Styles.calendarWrap}
+              />
+              <h2>{state.surveyResult.question}</h2>
             </hgroup>
             <FlipMove className={Styles.answerList}>
-              <li className={Styles.active}>
-                <img src={reactIcon} />
-                <span className={Styles.answer}>ReatJS</span>
-                <span className={Styles.percent}>50%</span>
-              </li>
-              <li>
-                <img src={reactIcon} />
-                <span className={Styles.answer}>ReatJS</span>
-                <span className={Styles.percent}>50%</span>
-              </li>
-              <li>
-                <img src={reactIcon} />
-                <span className={Styles.answer}>ReatJS</span>
-                <span className={Styles.percent}>50%</span>
-              </li>
+              {state.surveyResult.answers.map((answer, index) => (
+                <li
+                  className={
+                    answer.isCurrenctAccountAnswer ? Styles.active : ''
+                  }
+                  key={index}
+                >
+                  {answer.image && <img src={answer.image} />}
+                  <span className={Styles.answer} data-testid="answer">
+                    {answer.answer}
+                  </span>
+                  <span className={Styles.percent} data-testid="percent">
+                    {answer.percent}%
+                  </span>
+                </li>
+              ))}
             </FlipMove>
             <button>Voltar</button>
             {state.isLoading && <Loading />}
