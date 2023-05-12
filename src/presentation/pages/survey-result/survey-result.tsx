@@ -5,18 +5,27 @@ import {
   Header,
   Loading
 } from '@/presentation/components'
-import React, { useState } from 'react'
+import React, { useEffect, useState } from 'react'
 import FlipMove from 'react-flip-move'
 import { reactIcon } from './react-icon'
 import Styles from './survey-result-styles.scss'
 import { type LoadSurveyResult } from '@/domain/usecases'
 
-export const SurveyResult: React.FC = () => {
+type Props = {
+  loadSurveyResult: LoadSurveyResult
+}
+
+export const SurveyResult: React.FC<Props> = ({ loadSurveyResult }: Props) => {
   const [state] = useState({
     isLoading: false,
     error: '',
     surveyResult: null as LoadSurveyResult.Model
   })
+
+  useEffect(() => {
+    loadSurveyResult.load().then().catch()
+  })
+
   return (
     <div className={Styles.surveyResultWrap}>
       <Header />

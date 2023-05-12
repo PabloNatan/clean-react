@@ -1,14 +1,22 @@
 import React from 'react'
 import { render, screen } from '@testing-library/react'
 import { SurveyResult } from './survey-result'
-import { mockAccountModel } from '@/domain/test'
+import { LoadSurveyResultSpy, mockAccountModel } from '@/domain/test'
 import { ApiContext } from '@/presentation/contexts'
 import { RouterProvider, createMemoryRouter } from 'react-router-dom'
 
-const makeSut = (): void => {
+type SutTypes = {
+  loadSurveyResultSpy: LoadSurveyResultSpy
+}
+
+const makeSut = (): SutTypes => {
+  const loadSurveyResultSpy = new LoadSurveyResultSpy()
   const history = createMemoryRouter(
     [
-      { path: '/surveys', element: <SurveyResult /> },
+      {
+        path: '/surveys',
+        element: <SurveyResult loadSurveyResult={loadSurveyResultSpy} />
+      },
       { path: '/', element: <></> }
     ],
     {
@@ -16,24 +24,32 @@ const makeSut = (): void => {
       initialEntries: ['/surveys']
     }
   )
-  const setCurrentAccountMock = jest.fn()
+
   render(
     <ApiContext.Provider
       value={{
-        setCurrentAccount: setCurrentAccountMock,
+        setCurrentAccount: jest.fn(),
         getCurrentAccount: () => mockAccountModel()
       }}
     >
       <RouterProvider router={history} />
     </ApiContext.Provider>
   )
+
+  return { loadSurveyResultSpy }
 }
 
 describe('SurveyResult Component', () => {
-  test('Should present correct initial state', async () => {
+  test('Should present correct initial state', () => {
     makeSut()
     expect(screen.getByTestId('survey-result')).toBeEmptyDOMElement()
     expect(screen.queryByTestId('error-wrap')).not.toBeInTheDocument()
     expect(screen.queryByTestId('loading-wrap')).not.toBeInTheDocument()
+  })
+
+  test('Should call LoadSurveyResult', async () => {
+    const { loadSurveyResultSpy } = makeSut()
+    await screen.findByTestId('survey-result')
+    expect(loadSurveyResultSpy.callsCount).toBe(1)
   })
 })
