@@ -1,6 +1,6 @@
 import { type LoadSurveyResult } from '@/domain/usecases'
 import React from 'react'
-import Styles from './result-styles.scss'
+import Styles from './answer-styles.scss'
 
 type Props = {
   answer: LoadSurveyResult.Answer
