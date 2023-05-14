@@ -1,15 +1,15 @@
-import React from 'react'
-import { RouterProvider, createMemoryRouter } from 'react-router-dom'
-import { render, screen, waitFor, within } from '@testing-library/react'
+import { AccessDeniedError, UnexpectedError } from '@/domain/errors'
+import { type AccountModel } from '@/domain/models'
 import {
   LoadSurveyResultSpy,
   mockAccountModel,
   mockSurveyResultModel
 } from '@/domain/test'
 import { ApiContext } from '@/presentation/contexts'
-import { AccessDeniedError, UnexpectedError } from '@/domain/errors'
-import { type AccountModel } from '@/domain/models'
+import { render, screen, waitFor, within } from '@testing-library/react'
 import user from '@testing-library/user-event'
+import React from 'react'
+import { RouterProvider, createMemoryRouter } from 'react-router-dom'
 import { SurveyResult } from './survey-result'
 
 type SutTypes = {
@@ -18,20 +18,24 @@ type SutTypes = {
   setCurrentAccountMock: (account: AccountModel) => void
 }
 
-const makeSut = (loadSurveyResultSpy = new LoadSurveyResultSpy()): SutTypes => {
+const makeSut = (
+  loadSurveyResultSpy = new LoadSurveyResultSpy(),
+  navHistory = {
+    initialIndex: 0,
+    initialEntries: ['/surveys/:id']
+  }
+): SutTypes => {
   const setCurrentAccountMock = jest.fn()
   const history = createMemoryRouter(
     [
+      { path: '/', element: <></> },
+      { path: '/login', element: <></> },
       {
-        path: '/surveys',
+        path: '/surveys/:id',
         element: <SurveyResult loadSurveyResult={loadSurveyResultSpy} />
-      },
-      { path: '/', element: <></> }
+      }
     ],
-    {
-      initialIndex: 0,
-      initialEntries: ['/surveys']
-    }
+    navHistory
   )
   render(
     <ApiContext.Provider
@@ -128,5 +132,17 @@ describe('SurveyResult Component', () => {
     })
     await user.click(button)
     expect(loadSurveyResultSpy.callsCount).toBe(1)
+  })
+
+  test('Should go to SurveyList on back button click', async () => {
+    const { history } = makeSut(undefined, {
+      initialIndex: 1,
+      initialEntries: ['/', '/surveys/:id']
+    })
+    const backbutton = await screen.findByRole('button', {
+      name: /voltar/i
+    })
+    await user.click(backbutton)
+    expect(history.state.location.pathname).toBe('/')
   })
 })

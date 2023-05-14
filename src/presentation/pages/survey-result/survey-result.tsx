@@ -9,6 +9,7 @@ import {
 import { useErrorHandler } from '@/presentation/hooks'
 import React, { useEffect, useState } from 'react'
 import FlipMove from 'react-flip-move'
+import { useNavigate } from 'react-router-dom'
 import Styles from './survey-result-styles.scss'
 
 type Props = {
@@ -19,6 +20,7 @@ export const SurveyResult: React.FC<Props> = ({ loadSurveyResult }: Props) => {
   const handlerError = useErrorHandler((error) => {
     setState({ ...state, surveyResult: null, error: error.message })
   })
+  const navigate = useNavigate()
   const [state, setState] = useState({
     isLoading: false,
     reload: false,
@@ -75,7 +77,13 @@ export const SurveyResult: React.FC<Props> = ({ loadSurveyResult }: Props) => {
                 </li>
               ))}
             </FlipMove>
-            <button>Voltar</button>
+            <button
+              onClick={() => {
+                navigate(-1)
+              }}
+            >
+              Voltar
+            </button>
           </>
         )}
         {state.isLoading && <Loading />}
