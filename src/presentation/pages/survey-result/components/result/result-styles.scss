@@ -21,38 +21,6 @@ hgroup {
   list-style: none;
   display: flex;
   flex-direction: column;
-
-  li {
-    display: flex;
-    flex-direction: row;
-    justify-content: space-between;
-    background-color: $white;
-    align-items: center;
-    padding: 16px;
-    border-radius: 8px;
-    color: $primaryDark;
-    margin-top: 16px;
-
-    &.active {
-      border: 2px solid $primaryLight;
-      box-shadow: 2px 2px 0 1px $primaryLight;
-    }
-
-    img {
-      width: 50px;
-      margin-right: 16px;
-    }
-
-    .answer {
-      flex-grow: 1;
-      margin-right: 16px;
-      font-size: 20px;
-    }
-
-    .percent {
-      font-size: 30px;
-    }
-  }
 }
 
 .button {
@@ -60,18 +28,13 @@ hgroup {
 }
 
 @media only screen and (max-width: 600px) {
-  .answerList {
-    img {
-      height: 40px;
-      width: 40px;
-    }
-
-    .answer {
-      font-size: 16px;
-    }
-
-    .percent {
+  hgroup {
+    h2 {
       font-size: 20px;
+    }
+
+    .calendarWrap {
+      width: 60px;
     }
   }
 }

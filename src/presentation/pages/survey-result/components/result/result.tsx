@@ -4,6 +4,7 @@ import React from 'react'
 import { useNavigate } from 'react-router-dom'
 import { type LoadSurveyResult } from '@/domain/usecases'
 import Styles from './result-styles.scss'
+import { Answer } from '..'
 
 type Props = {
   surveyResult: LoadSurveyResult.Model
@@ -19,18 +20,9 @@ export const Result: React.FC<Props> = ({ surveyResult }: Props) => {
       </hgroup>
       <FlipMove className={Styles.answerList}>
         {surveyResult.answers.map((answer, index) => (
-          <li
-            className={answer.isCurrenctAccountAnswer ? Styles.active : ''}
-            key={index}
-          >
-            {answer.image && <img src={answer.image} />}
-            <span className={Styles.answer} data-testid="answer">
-              {answer.answer}
-            </span>
-            <span className={Styles.percent} data-testid="percent">
-              {answer.percent}%
-            </span>
-          </li>
+          <div key={index}>
+            <Answer answer={answer} />
+          </div>
         ))}
       </FlipMove>
       <button

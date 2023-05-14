@@ -3,15 +3,16 @@ export interface LoadSurveyResult {
 }
 
 export namespace LoadSurveyResult {
+  export type Answer = {
+    image?: string
+    answer: string
+    count: number
+    percent: number
+    isCurrenctAccountAnswer: boolean
+  }
   export type Model = {
     question: string
     date: Date
-    answers: Array<{
-      image?: string
-      answer: string
-      count: number
-      percent: number
-      isCurrenctAccountAnswer: boolean
-    }>
+    answers: Answer[]
   }
 }
