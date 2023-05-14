@@ -1,15 +1,8 @@
 import { type LoadSurveyResult } from '@/domain/usecases'
-import {
-  Calendar,
-  Error,
-  Footer,
-  Header,
-  Loading
-} from '@/presentation/components'
+import { Error, Footer, Header, Loading } from '@/presentation/components'
 import { useErrorHandler } from '@/presentation/hooks'
 import React, { useEffect, useState } from 'react'
-import FlipMove from 'react-flip-move'
-import { useNavigate } from 'react-router-dom'
+import { Result } from './components'
 import Styles from './survey-result-styles.scss'
 
 type Props = {
@@ -20,7 +13,6 @@ export const SurveyResult: React.FC<Props> = ({ loadSurveyResult }: Props) => {
   const handlerError = useErrorHandler((error) => {
     setState({ ...state, surveyResult: null, error: error.message })
   })
-  const navigate = useNavigate()
   const [state, setState] = useState({
     isLoading: false,
     reload: false,
@@ -50,42 +42,7 @@ export const SurveyResult: React.FC<Props> = ({ loadSurveyResult }: Props) => {
     <div className={Styles.surveyResultWrap}>
       <Header />
       <div className={Styles.contentWrap} data-testid="survey-result">
-        {state.surveyResult && (
-          <>
-            <hgroup>
-              <Calendar
-                date={state.surveyResult.date}
-                className={Styles.calendarWrap}
-              />
-              <h2>{state.surveyResult.question}</h2>
-            </hgroup>
-            <FlipMove className={Styles.answerList}>
-              {state.surveyResult.answers.map((answer, index) => (
-                <li
-                  className={
-                    answer.isCurrenctAccountAnswer ? Styles.active : ''
-                  }
-                  key={index}
-                >
-                  {answer.image && <img src={answer.image} />}
-                  <span className={Styles.answer} data-testid="answer">
-                    {answer.answer}
-                  </span>
-                  <span className={Styles.percent} data-testid="percent">
-                    {answer.percent}%
-                  </span>
-                </li>
-              ))}
-            </FlipMove>
-            <button
-              onClick={() => {
-                navigate(-1)
-              }}
-            >
-              Voltar
-            </button>
-          </>
-        )}
+        {state.surveyResult && <Result surveyResult={state.surveyResult} />}
         {state.isLoading && <Loading />}
         {state.error && <Error error={state.error} reload={handleReload} />}
       </div>
