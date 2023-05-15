@@ -1,23 +1,23 @@
 import * as Helper from '../utils/helpers'
 import * as Http from '../utils/http-mocks'
 
-const path = /api\/surveys$/i
+const path = /api\/surveys/i
 const mockUnexpectedError = (): void => {
   Http.mockServerError(path, 'GET')
 }
 const mockAccessDeniedError = (): void => {
   Http.mockUnauthorizedError(path, 'GET')
 }
-const mockSuccess = (): void => {
-  Http.mockOk(path, 'GET', 'survey-list')
+const mockLoadSuccess = (): void => {
+  Http.mockOk(path, 'GET', 'survey-result')
 }
 
-describe('SurveyList', () => {
+describe('SurveyResult', () => {
   beforeEach(() => {
     cy.fixture('account').then((account) => {
       Helper.setLocalStorageItem('account', account)
     })
-    cy.visit('')
+    cy.visit('/surveys/any_id')
   })
 
   it('Should present error on UnexpectedError', () => {
@@ -28,15 +28,15 @@ describe('SurveyList', () => {
     )
   })
 
-  it('Should reload ob button click', () => {
+  it('Should reload on button click', () => {
     mockUnexpectedError()
     cy.findByTestId('error-wrap').should(
       'contain.text',
       'Algo de errado aconteceu. Tente novamente em breve'
     )
-    mockSuccess()
+    mockLoadSuccess()
     cy.findByRole('button', { name: /tentar novamente/i }).click()
-    cy.findAllByRole('listitem', { name: /survey$/i }).should('have.length', 2)
+    cy.findByTestId('survey-result').should('exist')
   })
 
   it('Should present error on UnexpectedError', () => {
@@ -56,26 +56,33 @@ describe('SurveyList', () => {
     Helper.testUrl('/login')
   })
 
-  it('Should present survey items', () => {
-    mockSuccess()
-    cy.findAllByRole('listitem', { name: /survey-empty$/i }).should(
-      'have.length',
-      4
-    )
-    cy.findAllByRole('listitem', { name: /survey$/i }).should('have.length', 2)
+  it('Should present survey result', () => {
+    mockLoadSuccess()
+    cy.findAllByRole('listitem').should('have.length', 2)
+    cy.get('[data-testid=survey-header]').then((header) => {
+      assert.equal(header.find('[data-testid="day"]').text(), '03')
+      assert.equal(header.find('[data-testid="month"]').text(), 'fev')
+      assert.equal(header.find('[data-testid="year"]').text(), '2018')
+      assert.equal(header.find('h2').text(), 'Question 1')
+    })
     cy.get('li:nth-child(1)').then((li) => {
-      assert.equal(li.find('[data-testid="day"]').text(), '03')
-      assert.equal(li.find('[data-testid="month"]').text(), 'fev')
-      assert.equal(li.find('[data-testid="year"]').text(), '2018')
-      assert.equal(li.find('[role="paragraph"]').text(), 'Question 1')
-      assert.equal(li.find('[role="icon"]').attr('data-icon-name'), 'thumbUp')
+      assert.equal(li.find('[data-testid="answer"]').text(), 'Answer 1')
+      assert.equal(li.find('[data-testid="percent"]').text(), '30%')
+      assert.notExists(li.find('img'))
     })
     cy.get('li:nth-child(2)').then((li) => {
-      assert.equal(li.find('[data-testid="day"]').text(), '08')
-      assert.equal(li.find('[data-testid="month"]').text(), 'mai')
-      assert.equal(li.find('[data-testid="year"]').text(), '2020')
-      assert.equal(li.find('[role="paragraph"]').text(), 'Question 2')
-      assert.equal(li.find('[role="icon"]').attr('data-icon-name'), 'thumbDown')
+      assert.equal(li.find('[data-testid="answer"]').text(), 'Answer 2')
+      assert.include(li.attr('class'), 'active')
+      assert.equal(li.find('[data-testid="percent"]').text(), '70%')
+      assert.exists(li.find('img'))
     })
+  })
+
+  it('Should go to surveys list on click go back', () => {
+    mockLoadSuccess()
+    cy.visit('')
+    cy.visit('/surveys/any_id')
+    cy.findByRole('button', { name: /voltar/i }).click()
+    Helper.testUrl('/')
   })
 })

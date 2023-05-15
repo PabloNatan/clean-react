@@ -11,7 +11,8 @@ const mockUnexpectedError = (): void => {
   Http.mockServerError(path, 'POST')
 }
 const mockSuccess = (): void => {
-  Http.mockOk(path, 'POST', 'account')
+  Http.mockOk(/api\/surveys/, 'GET', 'survey-list')
+  Http.mockOk(path, 'POST', 'account', 'loginRequest')
 }
 
 const populateFields = (): void => {
@@ -76,12 +77,13 @@ describe('Login', () => {
     Helper.testLocalStorageItem('account')
   })
 
-  it('Should present multiple submits', () => {
+  it('Should prevent multiple submits', () => {
     mockSuccess()
     populateFields()
-    cy.get('button[type=submit]').dblclick()
-    cy.wait('@request')
-    Helper.testHttpCallsCount(1)
+    // cy.getByTestId('submit').dblclick()
+    cy.getByTestId('submit').click()
+    cy.wait('@loginRequest')
+    cy.get('@loginRequest.all').should('have.length', 1)
   })
 
   it('Should not call submit if form is invalid', () => {

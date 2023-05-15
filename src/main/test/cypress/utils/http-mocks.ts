@@ -1,7 +1,7 @@
 import { faker } from '@faker-js/faker'
 import { type Method } from 'cypress/types/net-stubbing'
 
-const delay = 300
+const delay = 200
 
 export const mockUnauthorizedError = (
   url: RegExp,
@@ -36,12 +36,17 @@ export const mockServerError = (url: RegExp, method: Method): void => {
   }).as('request')
 }
 
-export const mockOk = (url: RegExp, method: Method, fixture: string): void => {
+export const mockOk = (
+  url: RegExp,
+  method: Method,
+  fixture: string,
+  alias: string = 'request'
+): void => {
   cy.intercept(method, url, {
     statusCode: 200,
     delay,
     fixture
-  }).as('request')
+  }).as(alias)
 }
 
 export const mockCreated = (

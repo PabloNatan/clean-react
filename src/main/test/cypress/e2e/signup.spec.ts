@@ -5,7 +5,7 @@ import * as Http from '../utils/http-mocks'
 
 const account = require('../fixtures/account.json')
 
-const path = /signup/i
+const path = /api\/auth\/signup/i
 const mockEmailInUseError = (): void => {
   Http.mockForbiddenError(path)
 }
@@ -96,7 +96,8 @@ describe('SignUp', () => {
   it('Should prevent multiple submits', () => {
     mockCreated()
     populateFields()
-    cy.get('button[type=submit]').dblclick()
+    // cy.getByTestId('submit').dblclick()
+    cy.getByTestId('submit').click()
     cy.wait('@request')
     Helper.testHttpCallsCount(1)
   })

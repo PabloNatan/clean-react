@@ -10,7 +10,7 @@ export const Answer: React.FC<Props> = ({ answer }: Props) => {
   const answerWrapClasses = [Styles.answerWrap]
 
   if (answer.isCurrenctAccountAnswer) {
-    answerWrapClasses.push(Styles.active)
+    answerWrapClasses.push('active')
   }
   return (
     <li className={answerWrapClasses.join(' ')}>
