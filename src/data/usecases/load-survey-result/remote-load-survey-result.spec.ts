@@ -1,4 +1,4 @@
-import { HttpGetClientSpy, mockRemoteSurveyResultModel } from '@/data/test'
+import { HttpClientSpy, mockRemoteSurveyResultModel } from '@/data/test'
 import { faker } from '@faker-js/faker'
 import { RemoteLoadSurveyResult } from './remote-load-survey-result'
 import { HttpStatusCode } from '@/data/protocols/http'
@@ -6,11 +6,11 @@ import { AccessDeniedError, UnexpectedError } from '@/domain/errors'
 
 type SutTypes = {
   sut: RemoteLoadSurveyResult
-  httpGetClientSpy: HttpGetClientSpy
+  httpGetClientSpy: HttpClientSpy<RemoteLoadSurveyResult.Model>
 }
 
 const makeSut = (url = faker.internet.url()): SutTypes => {
-  const httpGetClientSpy = new HttpGetClientSpy()
+  const httpGetClientSpy = new HttpClientSpy<RemoteLoadSurveyResult.Model>()
   const sut = new RemoteLoadSurveyResult(url, httpGetClientSpy)
   return { sut, httpGetClientSpy }
 }
@@ -28,7 +28,7 @@ const validateErroThrown = async (
 }
 
 describe('RemoteLoadSurveyResult', () => {
-  test('Should call HttpGetClient with correct URL', async () => {
+  test('Should call HttpClient with correct URL and method', async () => {
     const url = faker.internet.url()
     const { sut, httpGetClientSpy } = makeSut(url)
     httpGetClientSpy.response = {
@@ -37,21 +37,22 @@ describe('RemoteLoadSurveyResult', () => {
     }
     sut.load()
     expect(httpGetClientSpy.url).toBe(url)
+    expect(httpGetClientSpy.method).toBe('get')
   })
 
-  test('Should throw AccessDeniedError if HttpGetclient returns 401', async () => {
+  test('Should throw AccessDeniedError if HttpClient returns 401', async () => {
     validateErroThrown(HttpStatusCode.unauthorized, new AccessDeniedError())
   })
 
-  test('Should throw UnexpectedError if HttpGetclient returns 404', async () => {
+  test('Should throw UnexpectedError if HttpClient returns 404', async () => {
     validateErroThrown(HttpStatusCode.notFound, new UnexpectedError())
   })
 
-  test('Should throw UnexpectedError if HttpGetclient returns 500', async () => {
+  test('Should throw UnexpectedError if HttpClient returns 500', async () => {
     validateErroThrown(HttpStatusCode.serverError, new UnexpectedError())
   })
 
-  test('Should return a list of LoadSurveyResult.Model if HttpGetClient returns 200', async () => {
+  test('Should return a list of LoadSurveyResult.Model if HttpClient returns 200', async () => {
     const { sut, httpGetClientSpy } = makeSut()
     const httpResult = mockRemoteSurveyResultModel()
     httpGetClientSpy.response = {
