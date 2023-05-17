@@ -41,18 +41,13 @@ async function validErrorThrowed<T extends Error>(
 }
 
 describe('RemoteAddAccount', () => {
-  test('Should call HttpClient with correct URL and method', async () => {
+  test('Should call HttpClient with correct values', async () => {
     const url = faker.internet.url()
     const { sut, httpPostClientSpy } = makeSut(url)
-    await sut.add(mockAddAccountParams())
-    expect(httpPostClientSpy.url).toBe(url)
-    expect(httpPostClientSpy.method).toBe('post')
-  })
-
-  test('Should call HttpClient with correct body', async () => {
-    const { sut, httpPostClientSpy } = makeSut()
     const addAccountParams = mockAddAccountParams()
     await sut.add(addAccountParams)
+    expect(httpPostClientSpy.url).toBe(url)
+    expect(httpPostClientSpy.method).toBe('post')
     expect(httpPostClientSpy.body).toEqual(addAccountParams)
   })
 
