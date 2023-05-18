@@ -248,4 +248,13 @@ describe('SurveyResult Component', () => {
     })
     expect(screen.queryByTestId('loading-wrap')).not.toBeInTheDocument()
   })
+
+  test('Should prevent multiple answer click', async () => {
+    const { saveSurveyResultSpy } = makeSut()
+    const listItens = await screen.findAllByRole('listitem')
+    await user.click(listItens[1])
+    await user.click(listItens[1])
+    await screen.findByTestId('survey-header')
+    expect(saveSurveyResultSpy.callsCount).toBe(1)
+  })
 })

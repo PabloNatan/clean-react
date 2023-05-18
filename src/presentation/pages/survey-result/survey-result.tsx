@@ -29,6 +29,7 @@ export const SurveyResult: React.FC<Props> = ({
     surveyResult: null as LoadSurveyResult.Model
   })
   const onAnswer = (answer: string): void => {
+    if (state.isLoading) return
     setState((old) => ({ ...old, isLoading: true, surveyResult: null }))
     saveSurveyResult
       .save({ answer })
