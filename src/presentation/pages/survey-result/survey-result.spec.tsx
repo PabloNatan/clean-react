@@ -126,7 +126,7 @@ describe('SurveyResult Component', () => {
     const error = new UnexpectedError()
     jest.spyOn(loadSurveyResultSpy, 'load').mockRejectedValueOnce(error)
     makeSut({ loadSurveyResultSpy })
-    expect(screen.queryAllByRole('li')).toHaveLength(0)
+    expect(screen.queryAllByRole('listitem')).toHaveLength(0)
     expect(screen.queryByTestId('loading-wrap')).not.toBeInTheDocument()
     const errorMessage = await screen.findByText(error.message)
     expect(errorMessage).toBeInTheDocument()
@@ -185,5 +185,18 @@ describe('SurveyResult Component', () => {
     expect(saveSurveyResultSpy.params).toEqual({
       answer: loadSurveyResultSpy.surveyResult.answers[1].answer
     })
+  })
+
+  test.only('Should render error on UnexpectedError', async () => {
+    const saveSurveyResultSpy = new SaveSurveyResultSpy()
+    const error = new UnexpectedError()
+    jest.spyOn(saveSurveyResultSpy, 'save').mockRejectedValueOnce(error)
+    makeSut({ saveSurveyResultSpy })
+    const listItens = await screen.findAllByRole('listitem')
+    await user.click(listItens[1])
+    expect(screen.queryByTestId('survey-header')).not.toBeInTheDocument()
+    const errorMessage = await screen.findByText(error.message)
+    expect(errorMessage).toBeInTheDocument()
+    expect(screen.queryByTestId('loading-wrap')).not.toBeInTheDocument()
   })
 })

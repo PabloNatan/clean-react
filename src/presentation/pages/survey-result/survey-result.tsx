@@ -15,7 +15,12 @@ export const SurveyResult: React.FC<Props> = ({
   saveSurveyResult
 }: Props) => {
   const handlerError = useErrorHandler((error) => {
-    setState({ ...state, surveyResult: null, error: error.message })
+    setState((old) => ({
+      ...old,
+      surveyResult: null,
+      isLoading: null,
+      error: error.message
+    }))
   })
   const [state, setState] = useState({
     isLoading: false,
@@ -25,7 +30,12 @@ export const SurveyResult: React.FC<Props> = ({
   })
   const onAnswer = (answer: string): void => {
     setState((old) => ({ ...old, isLoading: true }))
-    saveSurveyResult.save({ answer }).then().catch()
+    saveSurveyResult
+      .save({ answer })
+      .then(() => {
+        console.log('deu sucesso')
+      })
+      .catch(handlerError)
   }
 
   const handleReload = (): void => {
@@ -44,7 +54,7 @@ export const SurveyResult: React.FC<Props> = ({
         setState((old) => ({ ...old, surveyResult, isLoading: false }))
       })
       .catch(handlerError)
-  }, [state.reload])
+  }, [])
 
   return (
     <div className={Styles.surveyResultWrap}>
