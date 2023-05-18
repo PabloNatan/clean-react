@@ -38,6 +38,10 @@ export class SaveSurveyResultSpy implements SaveSurveyResult {
   surveyResult = mockSurveyResultModel()
   async save(params: SaveSurveyResult.Params): Promise<LoadSurveyResult.Model> {
     this.params = params
-    return this.surveyResult
+    return new Promise((resolve) => {
+      setTimeout(() => {
+        resolve(this.surveyResult)
+      }, 100)
+    })
   }
 }

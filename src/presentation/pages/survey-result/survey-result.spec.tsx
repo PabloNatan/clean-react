@@ -88,7 +88,7 @@ describe('SurveyResult Component', () => {
     expect(loadSurveyResultSpy.callsCount).toBe(1)
   })
 
-  test('Should call LoadSurveyResult', async () => {
+  test('Should present SurveyResult data on LoadSurveyResult success', async () => {
     const loadSurveyResultSpy = new LoadSurveyResultSpy()
     const surveyResult = Object.assign(mockSurveyResultModel(), {
       date: new Date('2020-01-10T00:00:00')
@@ -121,7 +121,7 @@ describe('SurveyResult Component', () => {
     })
   })
 
-  test('Should render Error on UnexpectedError', async () => {
+  test('Should render Error on LoadSurveyResultSpy throw UnexpectedError', async () => {
     const loadSurveyResultSpy = new LoadSurveyResultSpy()
     const error = new UnexpectedError()
     jest.spyOn(loadSurveyResultSpy, 'load').mockRejectedValueOnce(error)
@@ -132,7 +132,7 @@ describe('SurveyResult Component', () => {
     expect(errorMessage).toBeInTheDocument()
   })
 
-  test('Should logout on AccessDeniedError', async () => {
+  test('Should logout on LoadSurveyResultSpy throw AccessDeniedError', async () => {
     const loadSurveyResultSpy = new LoadSurveyResultSpy()
     jest
       .spyOn(loadSurveyResultSpy, 'load')
@@ -187,7 +187,7 @@ describe('SurveyResult Component', () => {
     })
   })
 
-  test.only('Should render error on UnexpectedError', async () => {
+  test('Should render error when SaveSurveyResultSpy throw UnexpectedError', async () => {
     const saveSurveyResultSpy = new SaveSurveyResultSpy()
     const error = new UnexpectedError()
     jest.spyOn(saveSurveyResultSpy, 'save').mockRejectedValueOnce(error)
@@ -197,6 +197,55 @@ describe('SurveyResult Component', () => {
     expect(screen.queryByTestId('survey-header')).not.toBeInTheDocument()
     const errorMessage = await screen.findByText(error.message)
     expect(errorMessage).toBeInTheDocument()
+    expect(screen.queryByTestId('loading-wrap')).not.toBeInTheDocument()
+  })
+
+  test('Should logout when SaveSurveyResultSpy throw AccessDeniedError', async () => {
+    const saveSurveyResultSpy = new SaveSurveyResultSpy()
+    jest
+      .spyOn(saveSurveyResultSpy, 'save')
+      .mockRejectedValueOnce(new AccessDeniedError())
+    const { setCurrentAccountMock, history } = makeSut({ saveSurveyResultSpy })
+    const listItens = await screen.findAllByRole('listitem')
+    await user.click(listItens[1])
+    expect(setCurrentAccountMock).toHaveBeenCalledWith(undefined)
+    expect(history.state.location.pathname).toBe('/login')
+  })
+
+  test('Should present SurveyResult data on SaveSurveyResult success', async () => {
+    const saveSurveyResultSpy = new SaveSurveyResultSpy()
+    const surveyResult = Object.assign(mockSurveyResultModel(), {
+      date: new Date('2018-05-10T00:00:00')
+    })
+    saveSurveyResultSpy.surveyResult = surveyResult
+    makeSut({ saveSurveyResultSpy })
+    const listItens = await screen.findAllByRole('listitem')
+    await user.click(listItens[1])
+    await screen.findByTestId('loading-wrap')
+    await screen.findByTestId('survey-header')
+    expect(screen.getByTestId('day')).toHaveTextContent('10')
+    expect(screen.getByTestId('month')).toHaveTextContent('mai')
+    expect(screen.getByTestId('year')).toHaveTextContent('2018')
+    expect(screen.getByRole('heading')).toHaveTextContent(surveyResult.question)
+    const answersLI = screen.getAllByRole('listitem')
+    expect(answersLI).toHaveLength(surveyResult.answers.length)
+
+    surveyResult.answers.forEach((answerResponse, index) => {
+      const answerWrap = answersLI[index]
+      const image = within(answerWrap).queryByRole('img')
+      const answerComponent = within(answerWrap).getByTestId('answer')
+      const percentComponent = within(answerWrap).getByTestId('percent')
+      if (answerResponse.isCurrenctAccountAnswer) {
+        expect(answerWrap).toHaveClass('active')
+      }
+      if (image) {
+        expect(image).toHaveAttribute('src', answerResponse.image)
+      } else {
+        expect(image).not.toBeInTheDocument()
+      }
+      expect(answerComponent).toHaveTextContent(answerResponse.answer)
+      expect(percentComponent).toHaveTextContent(`${answerResponse.percent}%`)
+    })
     expect(screen.queryByTestId('loading-wrap')).not.toBeInTheDocument()
   })
 })

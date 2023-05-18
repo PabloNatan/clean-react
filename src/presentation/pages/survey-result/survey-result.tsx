@@ -29,15 +29,14 @@ export const SurveyResult: React.FC<Props> = ({
     surveyResult: null as LoadSurveyResult.Model
   })
   const onAnswer = (answer: string): void => {
-    setState((old) => ({ ...old, isLoading: true }))
+    setState((old) => ({ ...old, isLoading: true, surveyResult: null }))
     saveSurveyResult
       .save({ answer })
-      .then(() => {
-        console.log('deu sucesso')
+      .then((surveyResult) => {
+        setState((old) => ({ ...old, surveyResult, isLoading: false }))
       })
       .catch(handlerError)
   }
-
   const handleReload = (): void => {
     setState((old) => ({
       ...old,
@@ -46,7 +45,6 @@ export const SurveyResult: React.FC<Props> = ({
       reload: !old.reload
     }))
   }
-
   useEffect(() => {
     loadSurveyResult
       .load()
@@ -54,8 +52,7 @@ export const SurveyResult: React.FC<Props> = ({
         setState((old) => ({ ...old, surveyResult, isLoading: false }))
       })
       .catch(handlerError)
-  }, [])
-
+  }, [state.reload])
   return (
     <div className={Styles.surveyResultWrap}>
       <Header />
