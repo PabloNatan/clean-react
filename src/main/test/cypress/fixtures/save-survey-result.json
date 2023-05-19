@@ -1,0 +1,21 @@
+{
+  "question": "Other Question",
+  "date": "2020-02-03T00:00:00",
+  "answers": [
+    {
+      "answer": "Answer 4",
+      "date": "2018-02-03T00:00:00",
+      "isCurrenctAccountAnswer": false,
+      "percent": 60,
+      "count": 6,
+      "image": "any_image"
+    },
+    {
+      "answer": "Answer 5",
+      "date": "2020-04-15T00:00:00",
+      "isCurrenctAccountAnswer": true,
+      "percent": 40,
+      "count": 4
+    }
+  ]
+}

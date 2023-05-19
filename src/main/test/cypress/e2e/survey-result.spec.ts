@@ -3,7 +3,7 @@ import * as Http from '../utils/http-mocks'
 
 const path = /api\/surveys/i
 const mockLoadSuccess = (): void => {
-  Http.mockOk(path, 'GET', 'survey-result')
+  Http.mockOk(path, 'GET', 'load-survey-result')
 }
 
 describe('SurveyResult', () => {
@@ -99,6 +99,10 @@ describe('SurveyResult', () => {
       Http.mockUnauthorizedError(savePath, 'PUT')
     }
 
+    const mockSaveSuccess = (): void => {
+      Http.mockOk(savePath, 'PUT', 'save-survey-result')
+    }
+
     beforeEach(() => {
       cy.fixture('account').then((account) => {
         Helper.setLocalStorageItem('account', account)
@@ -120,6 +124,29 @@ describe('SurveyResult', () => {
       mockAccessDeniedError()
       cy.get('li:nth-child(1)').click()
       Helper.testUrl('/login')
+    })
+
+    it('Should present survey result', () => {
+      mockSaveSuccess()
+      cy.get('li:nth-child(1)').click()
+      cy.findAllByRole('listitem').should('have.length', 2)
+      cy.get('[data-testid=survey-header]').then((header) => {
+        assert.equal(header.find('[data-testid="day"]').text(), '03')
+        assert.equal(header.find('[data-testid="month"]').text(), 'fev')
+        assert.equal(header.find('[data-testid="year"]').text(), '2020')
+        assert.equal(header.find('h2').text(), 'Other Question')
+      })
+      cy.get('li:nth-child(1)').then((li) => {
+        assert.equal(li.find('[data-testid="answer"]').text(), 'Answer 4')
+        assert.equal(li.find('[data-testid="percent"]').text(), '60%')
+        assert.exists(li.find('img'))
+      })
+      cy.get('li:nth-child(2)').then((li) => {
+        assert.equal(li.find('[data-testid="answer"]').text(), 'Answer 5')
+        assert.include(li.attr('class'), 'active')
+        assert.equal(li.find('[data-testid="percent"]').text(), '40%')
+        assert.notExists(li.find('img'))
+      })
     })
   })
 })
